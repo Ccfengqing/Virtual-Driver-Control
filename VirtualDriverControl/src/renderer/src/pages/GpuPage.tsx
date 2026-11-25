@@ -26,25 +26,25 @@ export function GpuPage(): React.JSX.Element {
       <div className="page-header">
         <div>
           <h1 className="page-title">GPU</h1>
-          <p className="page-subtitle">Choose which adapter renders your virtual displays</p>
+          <p className="page-subtitle">选择由哪个适配器渲染你的虚拟显示器</p>
         </div>
         <button type="button" className="btn small" disabled={gpusLoading} onClick={() => void refreshGpus()}>
           {gpusLoading ? <Loader2 size={13} className="spin" /> : <RefreshCw size={13} />}
-          Rescan
+          重新扫描
         </button>
       </div>
 
       {!online && (
         <div className="banner info">
           <Cpu size={15} />
-          Driver offline - adapters listed from Windows (WMI). Assignments are staged into the draft configuration.
+          驱动离线 - 适配器列表来自 Windows (WMI)。分配操作将暂存到草稿配置。
         </div>
       )}
 
       <Card
         icon={Gpu}
-        title="Available adapters"
-        subtitle={online ? 'Enumerated by the driver via GETALLGPUS' : 'Enumerated via WMI'}
+        title="可用适配器"
+        subtitle={online ? '由驱动通过 GETALLGPUS 枚举' : '通过 WMI 枚举'}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div className={`gpu-card ${isDefault ? 'assigned' : ''}`}>
@@ -52,16 +52,16 @@ export function GpuPage(): React.JSX.Element {
               <Zap size={18} />
             </span>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 620 }}>System default</div>
+              <div style={{ fontWeight: 620 }}>系统默认</div>
               <div className="faint" style={{ fontSize: 12 }}>
-                Let Windows pick the adapter (recommended for single-GPU systems)
+                由 Windows 选择适配器（单 GPU 系统推荐）
               </div>
             </div>
             {isDefault ? (
-              <span className="badge ok">assigned</span>
+              <span className="badge ok">已分配</span>
             ) : (
               <button type="button" className="btn small" disabled={busy !== null} onClick={() => void assignGpu('default')}>
-                Assign
+                分配
               </button>
             )}
           </div>
@@ -76,13 +76,13 @@ export function GpuPage(): React.JSX.Element {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 620, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{gpu.name}</div>
                   <div className="faint" style={{ fontSize: 12 }}>
-                    {gpu.source === 'pipe' ? 'Reported by driver' : 'Reported by Windows'}
-                    {gpu.driverVersion ? ` · driver ${gpu.driverVersion}` : ''}
-                    {gpu.vramMB ? ` · ${(gpu.vramMB / 1024).toFixed(1)} GB VRAM` : ''}
+                    {gpu.source === 'pipe' ? '由驱动报告' : '由 Windows 报告'}
+                    {gpu.driverVersion ? ` · 驱动 ${gpu.driverVersion}` : ''}
+                    {gpu.vramMB ? ` · ${(gpu.vramMB / 1024).toFixed(1)} GB 显存` : ''}
                   </div>
                 </div>
                 {assigned ? (
-                  <span className="badge ok">assigned</span>
+                  <span className="badge ok">已分配</span>
                 ) : (
                   <button type="button" className="btn small" disabled={busy !== null} onClick={() => void assignGpu(gpu.name)}>
                     Assign
@@ -92,11 +92,11 @@ export function GpuPage(): React.JSX.Element {
             )
           })}
 
-          {gpus.length === 0 && !gpusLoading && <span className="faint">No adapters found.</span>}
+          {gpus.length === 0 && !gpusLoading && <span className="faint">未找到适配器。</span>}
         </div>
       </Card>
 
-      <Card icon={Cpu} title="Diagnostics" subtitle="Query the driver directly - results stream to the console">
+      <Card icon={Cpu} title="诊断" subtitle="直接查询驱动 - 结果显示在控制台">
         <div className="row wrap">
           <button
             type="button"
@@ -107,7 +107,7 @@ export function GpuPage(): React.JSX.Element {
               setPage('console')
             }}
           >
-            D3D device info
+            D3D 设备信息
           </button>
           <button
             type="button"
@@ -118,7 +118,7 @@ export function GpuPage(): React.JSX.Element {
               setPage('console')
             }}
           >
-            Assigned GPU
+            已分配 GPU
           </button>
           <button
             type="button"
@@ -129,7 +129,7 @@ export function GpuPage(): React.JSX.Element {
               setPage('console')
             }}
           >
-            IddCx version
+            IddCx 版本
           </button>
           <button
             type="button"
@@ -140,7 +140,7 @@ export function GpuPage(): React.JSX.Element {
               setPage('console')
             }}
           >
-            All GPUs
+            所有 GPU
           </button>
         </div>
       </Card>

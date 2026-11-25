@@ -6,10 +6,10 @@ import { Card, Field, NumberField, Segmented, Toggle } from '@renderer/component
 import { useSettings } from '@renderer/stores/settings'
 
 const COLOUR_FORMATS: Array<{ value: ColourFormat; label: string; sub: string }> = [
-  { value: 'RGB', label: 'RGB', sub: 'Full fidelity, default' },
-  { value: 'YCbCr444', label: 'YCbCr 4:4:4', sub: 'No chroma subsampling' },
-  { value: 'YCbCr422', label: 'YCbCr 4:2:2', sub: 'Half chroma bandwidth' },
-  { value: 'YCbCr420', label: 'YCbCr 4:2:0', sub: 'Quarter chroma, streaming' }
+  { value: 'RGB', label: 'RGB', sub: '完整保真，默认' },
+  { value: 'YCbCr444', label: 'YCbCr 4:4:4', sub: '无色度采样' },
+  { value: 'YCbCr422', label: 'YCbCr 4:2:2', sub: '色度带宽减半' },
+  { value: 'YCbCr420', label: 'YCbCr 4:2:0', sub: '四分之一色度，适合串流' }
 ]
 
 export function ColorPage(): React.JSX.Element {
@@ -24,12 +24,12 @@ export function ColorPage(): React.JSX.Element {
     <div className="page-inner">
       <div className="page-header">
         <div>
-          <h1 className="page-title">HDR & Color</h1>
-          <p className="page-subtitle">Pixel format, HDR10 metadata and the color gamut your virtual displays advertise</p>
+          <h1 className="page-title">HDR 与色彩</h1>
+          <p className="page-subtitle">虚拟显示器对外声明的像素格式、HDR10 元数据与色域</p>
         </div>
       </div>
 
-      <Card icon={Palette} title="Color format" subtitle="How pixels are encoded on the virtual link">
+      <Card icon={Palette} title="色彩格式" subtitle="虚拟链路上像素的编码方式">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div className="row wrap" style={{ gap: 9 }}>
             {COLOUR_FORMATS.map((format) => (
@@ -54,13 +54,13 @@ export function ColorPage(): React.JSX.Element {
               checked={draft.colour.hdrPlus}
               onChange={(v) => patch((d) => (d.colour.hdrPlus = v))}
               label="HDR+"
-              sublabel="Requires Windows 11 23H2+"
+              sublabel="需要 Windows 11 23H2 或更高版本"
             />
             <Toggle
               checked={draft.colour.sdr10bit}
               onChange={(v) => patch((d) => (d.colour.sdr10bit = v))}
               label="SDR 10-bit"
-              sublabel="10-bit output without HDR"
+              sublabel="不启用 HDR 的 10 位输出"
             />
           </div>
         </div>
@@ -68,13 +68,13 @@ export function ColorPage(): React.JSX.Element {
 
       <Card
         icon={SunMedium}
-        title="HDR10 static metadata"
-        subtitle="Mastering display luminance advertised to HDR-aware apps"
+        title="HDR10 静态元数据"
+        subtitle="向支持 HDR 的应用声明的母版显示器亮度"
         actions={<Toggle checked={hdr10.enabled} onChange={(v) => patch((d) => (d.hdrAdvanced.hdr10StaticMetadata.enabled = v))} />}
       >
         <div className="grid-4" style={{ opacity: hdr10.enabled ? 1 : 0.45, pointerEvents: hdr10.enabled ? 'auto' : 'none' }}>
           <NumberField
-            label="Max mastering (nits)"
+            label="最大母版亮度 (尼特)"
             value={hdr10.maxDisplayMasteringLuminance}
             min={100}
             max={10000}
@@ -82,7 +82,7 @@ export function ColorPage(): React.JSX.Element {
             onChange={(v) => patch((d) => (d.hdrAdvanced.hdr10StaticMetadata.maxDisplayMasteringLuminance = v))}
           />
           <NumberField
-            label="Min mastering (nits)"
+            label="最小母版亮度 (尼特)"
             value={hdr10.minDisplayMasteringLuminance}
             min={0.0001}
             max={5}
@@ -95,7 +95,7 @@ export function ColorPage(): React.JSX.Element {
             min={100}
             max={10000}
             step={50}
-            hint="Max content light level"
+            hint="最大内容亮度"
             onChange={(v) => patch((d) => (d.hdrAdvanced.hdr10StaticMetadata.maxContentLightLevel = v))}
           />
           <NumberField
@@ -104,7 +104,7 @@ export function ColorPage(): React.JSX.Element {
             min={50}
             max={5000}
             step={50}
-            hint="Max frame-average light level"
+            hint="最大帧平均亮度"
             onChange={(v) => patch((d) => (d.hdrAdvanced.hdr10StaticMetadata.maxFrameAvgLightLevel = v))}
           />
         </div>
@@ -112,8 +112,8 @@ export function ColorPage(): React.JSX.Element {
 
       <Card
         icon={Triangle}
-        title="Color primaries"
-        subtitle="Drag the gamut your virtual display claims to cover - dashed triangle is sRGB"
+        title="原色"
+        subtitle="拖动调整虚拟显示器声明的色域 - 虚线三角形为 sRGB"
         actions={<Toggle checked={primaries.enabled} onChange={(v) => patch((d) => (d.hdrAdvanced.colorPrimaries.enabled = v))} />}
       >
         <div className="row" style={{ alignItems: 'flex-start', gap: 26, flexWrap: 'wrap' }}>
@@ -127,7 +127,7 @@ export function ColorPage(): React.JSX.Element {
             }
           />
           <div style={{ flex: 1, minWidth: 260, display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <Field label="Preset gamut">
+            <Field label="预设色域">
               <div className="row wrap" style={{ gap: 7 }}>
                 {Object.entries(COLOR_SPACE_PRESETS).map(([name, preset]) => (
                   <button
@@ -150,29 +150,29 @@ export function ColorPage(): React.JSX.Element {
             <table className="data-table" style={{ opacity: primaries.enabled ? 1 : 0.5 }}>
               <thead>
                 <tr>
-                  <th>Primary</th>
+                  <th>原色</th>
                   <th>x</th>
                   <th>y</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style={{ color: '#ff5d5d' }}>Red</td>
+                  <td style={{ color: '#ff5d5d' }}>红</td>
                   <td className="mono">{primaries.redX.toFixed(4)}</td>
                   <td className="mono">{primaries.redY.toFixed(4)}</td>
                 </tr>
                 <tr>
-                  <td style={{ color: '#4ade80' }}>Green</td>
+                  <td style={{ color: '#4ade80' }}>绿</td>
                   <td className="mono">{primaries.greenX.toFixed(4)}</td>
                   <td className="mono">{primaries.greenY.toFixed(4)}</td>
                 </tr>
                 <tr>
-                  <td style={{ color: '#60a5fa' }}>Blue</td>
+                  <td style={{ color: '#60a5fa' }}>蓝</td>
                   <td className="mono">{primaries.blueX.toFixed(4)}</td>
                   <td className="mono">{primaries.blueY.toFixed(4)}</td>
                 </tr>
                 <tr>
-                  <td>White point</td>
+                  <td>白点</td>
                   <td className="mono">{primaries.whiteX.toFixed(4)}</td>
                   <td className="mono">{primaries.whiteY.toFixed(4)}</td>
                 </tr>
@@ -185,13 +185,13 @@ export function ColorPage(): React.JSX.Element {
       <div className="card-grid two">
         <Card
           icon={Blend}
-          title="Color space & gamma"
+          title="色彩空间与伽马"
           actions={<Toggle checked={colorSpace.enabled} onChange={(v) => patch((d) => (d.hdrAdvanced.colorSpace.enabled = v))} />}
         >
           <div
             style={{ display: 'flex', flexDirection: 'column', gap: 14, opacity: colorSpace.enabled ? 1 : 0.45, pointerEvents: colorSpace.enabled ? 'auto' : 'none' }}
           >
-            <Field label={`Gamma correction: ${colorSpace.gammaCorrection.toFixed(2)}`}>
+            <Field label={`伽马校正：${colorSpace.gammaCorrection.toFixed(2)}`}>
               <input
                 type="range"
                 min={1.0}
@@ -201,7 +201,7 @@ export function ColorPage(): React.JSX.Element {
                 onChange={(e) => patch((d) => (d.hdrAdvanced.colorSpace.gammaCorrection = Number(e.target.value)))}
               />
             </Field>
-            <Field label="Primary color space">
+            <Field label="主色彩空间">
               <select
                 value={colorSpace.primaryColorSpace}
                 onChange={(e) => patch((d) => (d.hdrAdvanced.colorSpace.primaryColorSpace = e.target.value))}
@@ -216,28 +216,28 @@ export function ColorPage(): React.JSX.Element {
             <Toggle
               checked={colorSpace.enableMatrixTransform}
               onChange={(v) => patch((d) => (d.hdrAdvanced.colorSpace.enableMatrixTransform = v))}
-              label="Matrix transform"
-              sublabel="Apply color space conversion matrix"
+              label="矩阵变换"
+              sublabel="应用色彩空间转换矩阵"
             />
           </div>
         </Card>
 
-        <Card icon={Sparkles} title="Bit depth & SDR level">
+        <Card icon={Sparkles} title="位深与 SDR 电平">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <Toggle
               checked={draft.colorAdvanced.bitDepthManagement.autoSelectFromColorSpace}
               onChange={(v) => patch((d) => (d.colorAdvanced.bitDepthManagement.autoSelectFromColorSpace = v))}
-              label="Auto bit depth"
-              sublabel="Derive bit depth from color space"
+              label="自动位深"
+              sublabel="根据色彩空间推导位深"
             />
-            <Field label="Force bit depth">
+            <Field label="强制位深">
               <Segmented
                 value={String(draft.colorAdvanced.bitDepthManagement.forceBitDepth) as '8' | '10' | '12' | '16'}
                 options={[
-                  { value: '8', label: '8-bit' },
-                  { value: '10', label: '10-bit' },
-                  { value: '12', label: '12-bit' },
-                  { value: '16', label: '16-bit' }
+                  { value: '8', label: '8 位' },
+                  { value: '10', label: '10 位' },
+                  { value: '12', label: '12 位' },
+                  { value: '16', label: '16 位' }
                 ]}
                 onChange={(v) => patch((d) => (d.colorAdvanced.bitDepthManagement.forceBitDepth = Number(v)))}
               />
@@ -245,11 +245,11 @@ export function ColorPage(): React.JSX.Element {
             <Toggle
               checked={draft.colorAdvanced.bitDepthManagement.fp16SurfaceSupport}
               onChange={(v) => patch((d) => (d.colorAdvanced.bitDepthManagement.fp16SurfaceSupport = v))}
-              label="FP16 surface support"
-              sublabel="Keep enabled for compatibility"
+              label="FP16 表面支持"
+              sublabel="为兼容性请保持启用"
             />
             <NumberField
-              label="SDR white level (nits)"
+              label="SDR 白电平 (尼特)"
               value={draft.colorAdvanced.colorFormatExtended.sdrWhiteLevel}
               min={40}
               max={480}

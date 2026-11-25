@@ -37,7 +37,7 @@ export interface IpcServices {
 }
 
 function assertDriverId(value: unknown): asserts value is ManagedDriverId {
-  if (value !== 'display' && value !== 'audio') throw new Error('Unknown driver id')
+  if (value !== 'display' && value !== 'audio') throw new Error('未知的驱动 ID')
 }
 
 export function registerIpc(services: IpcServices, getWindow: () => BrowserWindow | null): void {
@@ -48,30 +48,30 @@ export function registerIpc(services: IpcServices, getWindow: () => BrowserWindo
 
   ipcMain.handle('pipe:set-display-count', (_e, count: unknown) => {
     const n = Number(count)
-    if (!Number.isFinite(n) || n < 0 || n > 16) throw new Error('Display count must be between 0 and 16')
+    if (!Number.isFinite(n) || n < 0 || n > 16) throw new Error('显示器数量必须在 0 到 16 之间')
     return pipe.setDisplayCount(n)
   })
 
   ipcMain.handle('pipe:toggle', (_e, name: unknown, value: unknown) => {
-    if (typeof name !== 'string' || !TOGGLE_COMMANDS.has(name)) throw new Error('Unknown toggle command')
+    if (typeof name !== 'string' || !TOGGLE_COMMANDS.has(name)) throw new Error('未知的开关命令')
     return pipe.setToggle(name as PipeToggleCommand, value === true)
   })
 
   ipcMain.handle('pipe:set-gpu', (_e, name: unknown) => {
-    if (typeof name !== 'string' || name.trim().length === 0) throw new Error('GPU name required')
+    if (typeof name !== 'string' || name.trim().length === 0) throw new Error('需要 GPU 名称')
     return pipe.setGpu(name.trim())
   })
 
   ipcMain.handle('pipe:query', (_e, command: unknown) => {
-    if (typeof command !== 'string' || !QUERY_COMMANDS.has(command)) throw new Error('Unknown query command')
+    if (typeof command !== 'string' || !QUERY_COMMANDS.has(command)) throw new Error('未知的查询命令')
     return pipe.send(command)
   })
 
   ipcMain.handle('pipe:send-raw', (_e, command: unknown) => {
-    if (typeof command !== 'string') throw new Error('Command must be a string')
+    if (typeof command !== 'string') throw new Error('命令必须是字符串')
     const trimmed = command.trim()
-    if (trimmed.length === 0 || trimmed.length > 127) throw new Error('Command must be 1-127 characters')
-    if (!RAW_COMMAND_PATTERN.test(trimmed)) throw new Error('Command contains unsupported characters')
+    if (trimmed.length === 0 || trimmed.length > 127) throw new Error('命令长度必须为 1 到 127 个字符')
+    if (!RAW_COMMAND_PATTERN.test(trimmed)) throw new Error('命令包含不支持的字符')
     return pipe.send(trimmed)
   })
 
@@ -94,12 +94,12 @@ export function registerIpc(services: IpcServices, getWindow: () => BrowserWindo
   ipcMain.handle('settings:backups', () => settings.listBackups())
 
   ipcMain.handle('settings:restore', (_e, fileName: unknown) => {
-    if (typeof fileName !== 'string') throw new Error('Backup file name required')
+    if (typeof fileName !== 'string') throw new Error('需要备份文件名')
     return settings.restoreBackup(fileName)
   })
 
   ipcMain.handle('settings:save-monitor-profile', (_e, xml: unknown, bytes: unknown) => {
-    if (typeof xml !== 'string' || !xml.includes('<IddCxMonitorConfig>')) throw new Error('Invalid monitor profile XML')
+    if (typeof xml !== 'string' || !xml.includes('<IddCxMonitorConfig>')) throw new Error('无效的显示器配置 XML')
     const edidBytes = bytes instanceof Uint8Array ? bytes : bytes instanceof ArrayBuffer ? new Uint8Array(bytes) : undefined
     return settings.saveMonitorProfile(xml, edidBytes)
   })
@@ -126,7 +126,7 @@ export function registerIpc(services: IpcServices, getWindow: () => BrowserWindo
   ipcMain.handle('installer:install', (_e, driverId: unknown, instances: unknown) => {
     assertDriverId(driverId)
     const n = instances === undefined ? 1 : Number(instances)
-    if (!Number.isFinite(n) || n < 1 || n > 4) throw new Error('Instance count must be between 1 and 4')
+    if (!Number.isFinite(n) || n < 1 || n > 4) throw new Error('实例数量必须在 1 到 4 之间')
     return installer.downloadAndInstall(driverId, n)
   })
   ipcMain.handle('installer:uninstall', (_e, driverId: unknown) => {
@@ -140,7 +140,7 @@ export function registerIpc(services: IpcServices, getWindow: () => BrowserWindo
   ipcMain.handle('installer:set-instances', (_e, driverId: unknown, count: unknown) => {
     assertDriverId(driverId)
     const n = Number(count)
-    if (!Number.isFinite(n) || n < 1 || n > 4) throw new Error('Instance count must be between 1 and 4')
+    if (!Number.isFinite(n) || n < 1 || n > 4) throw new Error('实例数量必须在 1 到 4 之间')
     return installer.setInstances(driverId, n)
   })
   ipcMain.handle('installer:test-signing', () => installer.testSigningEnabled())
@@ -149,17 +149,17 @@ export function registerIpc(services: IpcServices, getWindow: () => BrowserWindo
   // --- Windows audio endpoints ---------------------------------------------------
   ipcMain.handle('audio:endpoints', () => audio.listEndpoints())
   ipcMain.handle('audio:set-default', (_e, id: unknown) => {
-    if (typeof id !== 'string') throw new Error('Endpoint id required')
+    if (typeof id !== 'string') throw new Error('需要端点 ID')
     return audio.setDefaultEndpoint(id)
   })
   ipcMain.handle('audio:set-volume', (_e, id: unknown, volume: unknown) => {
-    if (typeof id !== 'string') throw new Error('Endpoint id required')
+    if (typeof id !== 'string') throw new Error('需要端点 ID')
     const v = Number(volume)
-    if (!Number.isFinite(v) || v < 0 || v > 1) throw new Error('Volume must be 0..1')
+    if (!Number.isFinite(v) || v < 0 || v > 1) throw new Error('音量必须在 0 到 1 之间')
     return audio.setVolume(id, v)
   })
   ipcMain.handle('audio:set-mute', (_e, id: unknown, muted: unknown) => {
-    if (typeof id !== 'string') throw new Error('Endpoint id required')
+    if (typeof id !== 'string') throw new Error('需要端点 ID')
     return audio.setMute(id, muted === true)
   })
 
@@ -172,7 +172,7 @@ export function registerIpc(services: IpcServices, getWindow: () => BrowserWindo
   // --- Preferences --------------------------------------------------------------
   ipcMain.handle('prefs:get', () => prefs.get())
   ipcMain.handle('prefs:set', (_e, patch: unknown) => {
-    if (typeof patch !== 'object' || patch === null) throw new Error('Invalid preferences')
+    if (typeof patch !== 'object' || patch === null) throw new Error('无效的首选项')
     // baseDir changes must go through prefs:set-base-dir so the driver's
     // VDDPATH registry value always stays in sync.
     const rest = { ...(patch as Partial<AppPreferences>) }
@@ -183,7 +183,7 @@ export function registerIpc(services: IpcServices, getWindow: () => BrowserWindo
     return next
   })
   ipcMain.handle('prefs:set-base-dir', async (_e, baseDir: unknown) => {
-    if (typeof baseDir !== 'string' || baseDir.trim().length === 0) throw new Error('Path required')
+    if (typeof baseDir !== 'string' || baseDir.trim().length === 0) throw new Error('需要路径')
     const result = await prefs.setBaseDir(baseDir)
     // Seed the new location with defaults so the driver finds a config there.
     if (result.ok) await settings.ensureDefaults()
@@ -192,7 +192,7 @@ export function registerIpc(services: IpcServices, getWindow: () => BrowserWindo
 
   // --- Shell ----------------------------------------------------------------------
   ipcMain.handle('shell:open-external', (_e, url: unknown) => {
-    if (typeof url !== 'string' || !/^https:\/\//.test(url)) throw new Error('Only https links may be opened')
+    if (typeof url !== 'string' || !/^https:\/\//.test(url)) throw new Error('只能打开 https 链接')
     return shell.openExternal(url)
   })
 
@@ -205,7 +205,7 @@ export function registerIpc(services: IpcServices, getWindow: () => BrowserWindo
       edid: `${base}\\EDID`
     }
     const target = typeof which === 'string' ? targets[which] : undefined
-    if (!target) throw new Error('Unknown folder')
+    if (!target) throw new Error('未知的文件夹')
     return shell.openPath(target)
   })
 
@@ -221,7 +221,7 @@ export function registerIpc(services: IpcServices, getWindow: () => BrowserWindo
 }
 
 function assertSettingsShape(value: unknown): asserts value is VddSettings {
-  if (typeof value !== 'object' || value === null) throw new Error('Settings payload must be an object')
+  if (typeof value !== 'object' || value === null) throw new Error('设置数据必须是对象')
   const v = value as Record<string, unknown>
   for (const key of [
     'monitors',
@@ -237,7 +237,7 @@ function assertSettingsShape(value: unknown): asserts value is VddSettings {
     'autoResolutions',
     'colorAdvanced'
   ]) {
-    if (!(key in v)) throw new Error(`Settings payload missing section: ${key}`)
+    if (!(key in v)) throw new Error(`设置数据缺少部分：${key}`)
   }
-  if (!Array.isArray(v.resolutions)) throw new Error('resolutions must be an array')
+  if (!Array.isArray(v.resolutions)) throw new Error('resolutions 必须是数组')
 }

@@ -70,16 +70,16 @@ export function ConsolePage(): React.JSX.Element {
     const cmd = command.trim()
     if (cmd.length === 0 || sending) return
     if (cmd.toUpperCase() === 'RELOAD_DRIVER') {
-      toast('warning', 'RELOAD_DRIVER is blocked', 'It causes undefined behavior in the driver (upstream issue #351). Use SETDISPLAYCOUNT N instead.')
+      toast('warning', 'RELOAD_DRIVER 已被阻止', '它会导致驱动出现未定义行为（上游问题 #351）。请改用 SETDISPLAYCOUNT N。')
       return
     }
     setSending(true)
     try {
       const result = await window.vdd.pipe.sendRaw(cmd)
-      if (!result.ok) toast('error', 'Command failed', result.error)
+      if (!result.ok) toast('error', '命令失败', result.error)
       setCommand('')
     } catch (error) {
-      toast('error', 'Command rejected', error instanceof Error ? error.message : String(error))
+      toast('error', '命令被拒绝', error instanceof Error ? error.message : String(error))
     } finally {
       setSending(false)
     }
@@ -89,15 +89,15 @@ export function ConsolePage(): React.JSX.Element {
     <div className="page-inner" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Console</h1>
-          <p className="page-subtitle">Unified driver activity - file logs, pipe traffic and app events</p>
+          <h1 className="page-title">控制台</h1>
+          <p className="page-subtitle">统一的驱动活动 - 文件日志、管道流量与应用事件</p>
         </div>
         <div className="row">
           <button type="button" className="btn ghost small" onClick={() => void window.vdd.system.openPath('logs')}>
-            <FolderOpen size={13} /> Logs folder
+            <FolderOpen size={13} /> 日志文件夹
           </button>
           <button type="button" className="btn ghost small" onClick={clear}>
-            <Eraser size={13} /> Clear
+            <Eraser size={13} /> 清空
           </button>
         </div>
       </div>
@@ -128,7 +128,7 @@ export function ConsolePage(): React.JSX.Element {
         ))}
         <input
           type="text"
-          placeholder="Filter messages…"
+          placeholder="过滤消息…"
           value={search}
           style={{ width: 200, marginLeft: 'auto' }}
           onChange={(e) => setSearch(e.target.value)}
@@ -138,9 +138,9 @@ export function ConsolePage(): React.JSX.Element {
           className={`chip selectable ${autoScroll ? 'on' : ''}`}
           style={{ background: autoScroll ? undefined : 'transparent', font: 'inherit' }}
           onClick={() => setAutoScroll(!autoScroll)}
-          title="Auto-scroll to newest"
+          title="自动滚动到最新"
         >
-          <ArrowDownToLine size={12} /> follow
+          <ArrowDownToLine size={12} /> 跟随
         </button>
       </div>
 
@@ -148,7 +148,7 @@ export function ConsolePage(): React.JSX.Element {
         {filtered.length === 0 && (
           <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-faint)' }}>
             <SquareTerminal size={26} strokeWidth={1.5} style={{ marginBottom: 8 }} />
-            <div>No log activity yet{online ? ' - try sending PING below' : ''}</div>
+            <div>暂无日志活动{online ? ' - 可尝试在下方发送 PING' : ''}</div>
           </div>
         )}
         {filtered.map((event) => (
@@ -165,7 +165,7 @@ export function ConsolePage(): React.JSX.Element {
           type="text"
           className="mono"
           list="pipe-commands"
-          placeholder={online ? 'Send a raw pipe command, e.g. PING' : 'Driver offline - pipe commands unavailable'}
+          placeholder={online ? '发送原始管道命令，例如 PING' : '驱动离线 - 管道命令不可用'}
           value={command}
           disabled={!online}
           style={{ flex: 1 }}
@@ -179,7 +179,7 @@ export function ConsolePage(): React.JSX.Element {
         </datalist>
         <button type="button" className="btn primary" disabled={!online || sending || command.trim().length === 0} onClick={() => void sendCommand()}>
           <SendHorizontal size={14} />
-          Send
+          发送
         </button>
       </div>
     </div>

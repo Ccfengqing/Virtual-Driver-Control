@@ -20,14 +20,14 @@ interface NavEntry {
 }
 
 const NAV: NavEntry[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'displays', label: 'Displays', icon: MonitorCog, section: 'Configure' },
-  { id: 'color', label: 'HDR & Color', icon: Palette },
-  { id: 'edid', label: 'EDID Lab', icon: ScanEye },
+  { id: 'dashboard', label: '仪表盘', icon: LayoutDashboard },
+  { id: 'displays', label: '显示器', icon: MonitorCog, section: '配置' },
+  { id: 'color', label: 'HDR 与色彩', icon: Palette },
+  { id: 'edid', label: 'EDID 实验室', icon: ScanEye },
   { id: 'gpu', label: 'GPU', icon: Cpu },
-  { id: 'audio', label: 'Audio', icon: Volume2 },
-  { id: 'console', label: 'Console', icon: SquareTerminal, section: 'Diagnostics' },
-  { id: 'settings', label: 'Settings', icon: SettingsIcon }
+  { id: 'audio', label: '音频', icon: Volume2 },
+  { id: 'console', label: '控制台', icon: SquareTerminal, section: '诊断' },
+  { id: 'settings', label: '设置', icon: SettingsIcon }
 ]
 
 export function Sidebar(): React.JSX.Element {

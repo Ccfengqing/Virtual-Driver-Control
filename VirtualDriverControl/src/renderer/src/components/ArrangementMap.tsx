@@ -79,7 +79,7 @@ export function DisplayCanvas(): React.JSX.Element {
 
   let monitors: React.JSX.Element | React.JSX.Element[]
   if (displays.length === 0) {
-    monitors = <div className="canvas-empty faint">Reading display topology…</div>
+    monitors = <div className="canvas-empty faint">正在读取显示器拓扑…</div>
   } else {
     const minX = Math.min(...displays.map((d) => d.bounds.x))
     const minY = Math.min(...displays.map((d) => d.bounds.y))
@@ -102,7 +102,7 @@ export function DisplayCanvas(): React.JSX.Element {
             width: Math.max(36, d.bounds.width * scale),
             height: Math.max(26, d.bounds.height * scale)
           }}
-          title={`${d.label}\n${pxW}×${pxH} @ ${d.frequency || '?'} Hz · scale ${Math.round(d.scaleFactor * 100)}%\nposition ${d.bounds.x}, ${d.bounds.y}${d.isVirtual ? '\nVirtual Display Driver' : ''}`}
+          title={`${d.label}\n${pxW}×${pxH} @ ${d.frequency || '?'} Hz · 缩放 ${Math.round(d.scaleFactor * 100)}%\n位置 ${d.bounds.x}, ${d.bounds.y}${d.isVirtual ? '\n虚拟显示器驱动' : ''}`}
         >
           <span className="ad-name">
             {d.primary && <Star size={10} fill="currentColor" />}
@@ -115,7 +115,7 @@ export function DisplayCanvas(): React.JSX.Element {
             {d.frequency ? `${d.frequency} Hz` : ''}
             {d.scaleFactor !== 1 ? ` · ${Math.round(d.scaleFactor * 100)}%` : ''}
           </span>
-          {d.isVirtual && <span className="ad-badge">VIRTUAL</span>}
+          {d.isVirtual && <span className="ad-badge">虚拟</span>}
         </div>
       )
     })
@@ -137,23 +137,23 @@ export function DisplayCanvas(): React.JSX.Element {
 
       <div className="canvas-bar">
         <div className="canvas-legend">
-          <span className="chip">{physicalCount} physical</span>
-          <span className={`chip ${virtualCount > 0 ? 'on' : ''}`}>{virtualCount} virtual</span>
+          <span className="chip">{physicalCount} 个物理</span>
+          <span className={`chip ${virtualCount > 0 ? 'on' : ''}`}>{virtualCount} 个虚拟</span>
           {count > 0 && virtualCount === 0 && (
             <span className="canvas-hint">
-              {count} configured — {online ? 'applying…' : 'appears when the driver is running'}
+              {count} 个已配置 — {online ? '应用中…' : '驱动运行时将出现'}
             </span>
           )}
         </div>
         <div className="canvas-controls">
-          <button type="button" className="btn ghost small" onClick={refresh} title="Re-read the display layout">
+          <button type="button" className="btn ghost small" onClick={refresh} title="重新读取显示器布局">
             <RefreshCw size={13} />
           </button>
-          <span className="canvas-ctl-label">Virtual displays</span>
+          <span className="canvas-ctl-label">虚拟显示器</span>
           <div className="count-stepper compact">
             <button
               type="button"
-              aria-label="Remove a virtual display"
+              aria-label="移除一个虚拟显示器"
               disabled={busy !== null || count <= 0}
               onClick={() => void applyDisplayCount(count - 1)}
             >
@@ -162,7 +162,7 @@ export function DisplayCanvas(): React.JSX.Element {
             <span className="count-value">{count}</span>
             <button
               type="button"
-              aria-label="Add a virtual display"
+              aria-label="添加一个虚拟显示器"
               disabled={busy !== null || count >= MAX_MONITORS}
               onClick={() => void applyDisplayCount(count + 1)}
             >
@@ -177,7 +177,7 @@ export function DisplayCanvas(): React.JSX.Element {
 
 export function ArrangementMap(): React.JSX.Element {
   return (
-    <Card icon={MonitorCheck} title="Desktop arrangement" subtitle="Physical and virtual monitors to scale - live Windows layout">
+    <Card icon={MonitorCheck} title="桌面排列" subtitle="按比例显示物理与虚拟显示器 - 实时 Windows 布局">
       <DisplayCanvas />
     </Card>
   )

@@ -2,17 +2,17 @@ export interface ResolutionPreset {
   width: number
   height: number
   label: string
-  category: 'Standard' | 'HD' | 'QHD' | '4K & Beyond' | 'Ultrawide' | 'Portable & Tablet'
+  category: '标准' | 'HD' | 'QHD' | '4K 及以上' | '超宽屏' | '便携与平板'
 }
 
 /** Curated subset of the upstream option.txt preset list (640x480 - 10240x4320). */
 export const RESOLUTION_PRESETS: ResolutionPreset[] = [
-  { width: 640, height: 480, label: 'VGA', category: 'Standard' },
-  { width: 800, height: 600, label: 'SVGA', category: 'Standard' },
-  { width: 1024, height: 768, label: 'XGA', category: 'Standard' },
-  { width: 1280, height: 1024, label: 'SXGA', category: 'Standard' },
-  { width: 1400, height: 1050, label: 'SXGA+', category: 'Standard' },
-  { width: 1600, height: 1200, label: 'UXGA', category: 'Standard' },
+  { width: 640, height: 480, label: 'VGA', category: '标准' },
+  { width: 800, height: 600, label: 'SVGA', category: '标准' },
+  { width: 1024, height: 768, label: 'XGA', category: '标准' },
+  { width: 1280, height: 1024, label: 'SXGA', category: '标准' },
+  { width: 1400, height: 1050, label: 'SXGA+', category: '标准' },
+  { width: 1600, height: 1200, label: 'UXGA', category: '标准' },
 
   { width: 1280, height: 720, label: 'HD 720p', category: 'HD' },
   { width: 1366, height: 768, label: 'WXGA', category: 'HD' },
@@ -25,24 +25,24 @@ export const RESOLUTION_PRESETS: ResolutionPreset[] = [
   { width: 2880, height: 1620, label: 'QHD+ 3K', category: 'QHD' },
   { width: 3200, height: 1800, label: 'WQXGA+', category: 'QHD' },
 
-  { width: 3840, height: 2160, label: '4K UHD', category: '4K & Beyond' },
-  { width: 4096, height: 2160, label: 'DCI 4K', category: '4K & Beyond' },
-  { width: 5120, height: 2880, label: '5K', category: '4K & Beyond' },
-  { width: 6016, height: 3384, label: '6K', category: '4K & Beyond' },
-  { width: 7680, height: 4320, label: '8K UHD', category: '4K & Beyond' },
+  { width: 3840, height: 2160, label: '4K UHD', category: '4K 及以上' },
+  { width: 4096, height: 2160, label: 'DCI 4K', category: '4K 及以上' },
+  { width: 5120, height: 2880, label: '5K', category: '4K 及以上' },
+  { width: 6016, height: 3384, label: '6K', category: '4K 及以上' },
+  { width: 7680, height: 4320, label: '8K UHD', category: '4K 及以上' },
 
-  { width: 2560, height: 1080, label: 'UW-FHD 21:9', category: 'Ultrawide' },
-  { width: 3440, height: 1440, label: 'UW-QHD 21:9', category: 'Ultrawide' },
-  { width: 3840, height: 1600, label: 'UW-QHD+ 24:10', category: 'Ultrawide' },
-  { width: 5120, height: 1440, label: 'Super UW 32:9', category: 'Ultrawide' },
-  { width: 5120, height: 2160, label: '5K2K 21:9', category: 'Ultrawide' },
+  { width: 2560, height: 1080, label: 'UW-FHD 21:9', category: '超宽屏' },
+  { width: 3440, height: 1440, label: 'UW-QHD 21:9', category: '超宽屏' },
+  { width: 3840, height: 1600, label: 'UW-QHD+ 24:10', category: '超宽屏' },
+  { width: 5120, height: 1440, label: 'Super UW 32:9', category: '超宽屏' },
+  { width: 5120, height: 2160, label: '5K2K 21:9', category: '超宽屏' },
 
-  { width: 1280, height: 800, label: 'WXGA Tablet', category: 'Portable & Tablet' },
-  { width: 2048, height: 1536, label: 'iPad Retina 4:3', category: 'Portable & Tablet' },
-  { width: 2160, height: 1440, label: 'Surface 3:2', category: 'Portable & Tablet' },
-  { width: 2256, height: 1504, label: 'Surface Laptop 3:2', category: 'Portable & Tablet' },
-  { width: 2736, height: 1824, label: 'Surface Pro 3:2', category: 'Portable & Tablet' },
-  { width: 2880, height: 1920, label: 'Surface Pro 8+ 3:2', category: 'Portable & Tablet' }
+  { width: 1280, height: 800, label: 'WXGA Tablet', category: '便携与平板' },
+  { width: 2048, height: 1536, label: 'iPad Retina 4:3', category: '便携与平板' },
+  { width: 2160, height: 1440, label: 'Surface 3:2', category: '便携与平板' },
+  { width: 2256, height: 1504, label: 'Surface Laptop 3:2', category: '便携与平板' },
+  { width: 2736, height: 1824, label: 'Surface Pro 3:2', category: '便携与平板' },
+  { width: 2880, height: 1920, label: 'Surface Pro 8+ 3:2', category: '便携与平板' }
 ]
 
 /** Common refresh-rate chips offered in the editor. */

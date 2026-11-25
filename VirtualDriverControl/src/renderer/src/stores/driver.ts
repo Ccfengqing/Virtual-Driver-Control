@@ -54,7 +54,7 @@ export const useDriver = create<DriverState>((set, get) => ({
       if (previous && previous.level !== status.level) {
         const toast = useUi.getState().toast
         if (status.level === 'online') {
-          toast('success', 'Driver online', 'The virtual display driver is responding.')
+          toast('success', '驱动在线', '虚拟显示器驱动正在响应。')
           // The live pipe may report a more precise IddCx version than the
           // offline build-table fallback - refresh now that it answers.
           void window.vdd.driver
@@ -62,7 +62,7 @@ export const useDriver = create<DriverState>((set, get) => ({
             .then((iddcx) => set({ iddcx }))
             .catch(() => undefined)
         } else if (previous.level === 'online') {
-          toast('warning', 'Driver went offline')
+          toast('warning', '驱动已离线')
         }
       }
     })
@@ -105,17 +105,17 @@ export const useDriver = create<DriverState>((set, get) => ({
 
     if (!status?.pipeConnected) {
       settings.patch((d) => (d.monitors.count = count))
-      toast('info', 'Driver offline', 'Display count staged - it will apply when the config is saved and the driver restarts.')
+      toast('info', '驱动离线', '显示器数量已暂存 - 将在保存配置并重启驱动后生效。')
       return
     }
 
-    set({ busy: count === 0 ? 'Removing all virtual displays…' : `Reconfiguring to ${count} display${count === 1 ? '' : 's'}…` })
+    set({ busy: count === 0 ? '正在移除所有虚拟显示器…' : `正在重新配置为 ${count} 个显示器…` })
     try {
       const result = await window.vdd.pipe.setDisplayCount(count)
       if (result.ok) {
-        toast('success', `Display count set to ${count}`, `Driver reloaded in ${(result.durationMs / 1000).toFixed(1)}s`)
+        toast('success', `显示器数量已设为 ${count}`, `驱动已在 ${(result.durationMs / 1000).toFixed(1)}s 内重新加载`)
       } else {
-        toast('error', 'Failed to set display count', result.error)
+        toast('error', '设置显示器数量失败', result.error)
       }
     } finally {
       set({ busy: null })
@@ -132,18 +132,18 @@ export const useDriver = create<DriverState>((set, get) => ({
 
     if (!status?.pipeConnected) {
       settings.patch((d) => TOGGLE_PATCHES[name](d, value))
-      toast('info', `${label} staged`, 'Driver offline - save the configuration to persist this change.')
+      toast('info', `${label} 已暂存`, '驱动离线 - 请保存配置以持久化此更改。')
       return
     }
 
     const reloads = name !== 'LOGGING' && name !== 'LOG_DEBUG'
-    if (reloads) set({ busy: `Applying ${label}…` })
+    if (reloads) set({ busy: `正在应用 ${label}…` })
     try {
       const result = await window.vdd.pipe.toggle(name, value)
       if (result.ok) {
-        toast('success', `${label} ${value ? 'enabled' : 'disabled'}`, reloads ? 'Driver reloaded.' : undefined)
+        toast('success', `${label} 已${value ? '启用' : '禁用'}`, reloads ? '驱动已重新加载。' : undefined)
       } else {
-        toast('error', `Failed to toggle ${label}`, result.error)
+        toast('error', `切换 ${label} 失败`, result.error)
       }
     } finally {
       if (reloads) set({ busy: null })
@@ -158,15 +158,15 @@ export const useDriver = create<DriverState>((set, get) => ({
 
     if (!status?.pipeConnected) {
       settings.patch((d) => (d.gpu.friendlyName = name))
-      toast('info', 'GPU staged', 'Driver offline - save the configuration to persist this change.')
+      toast('info', 'GPU 已暂存', '驱动离线 - 请保存配置以持久化此更改。')
       return
     }
 
-    set({ busy: `Assigning ${name}…` })
+    set({ busy: `正在分配 ${name}…` })
     try {
       const result = await window.vdd.pipe.setGpu(name)
-      if (result.ok) toast('success', 'GPU assigned', `Virtual displays now render on ${name}.`)
-      else toast('error', 'Failed to assign GPU', result.error)
+      if (result.ok) toast('success', 'GPU 已分配', `虚拟显示器现在由 ${name} 渲染。`)
+      else toast('error', '分配 GPU 失败', result.error)
     } finally {
       set({ busy: null })
       await useSettings.getState().load()
@@ -184,17 +184,17 @@ export const useDriver = create<DriverState>((set, get) => ({
 
     const { status } = get()
     if (!status?.pipeConnected) {
-      toast('info', 'Saved', 'Driver offline - the new configuration loads on next driver start.')
+      toast('info', '已保存', '驱动离线 - 新配置将在下次启动驱动时加载。')
       return
     }
 
-    set({ busy: 'Reloading driver with new configuration…' })
+    set({ busy: '正在用新配置重新加载驱动…' })
     try {
       const result = await window.vdd.pipe.setDisplayCount(count)
       if (result.ok) {
-        toast('success', 'Configuration applied', `Driver reloaded in ${(result.durationMs / 1000).toFixed(1)}s`)
+        toast('success', '配置已应用', `驱动已在 ${(result.durationMs / 1000).toFixed(1)}s 内重新加载`)
       } else {
-        toast('error', 'Reload failed', result.error)
+        toast('error', '重新加载失败', result.error)
       }
     } finally {
       set({ busy: null })

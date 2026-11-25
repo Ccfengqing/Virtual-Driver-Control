@@ -297,13 +297,13 @@ export class AudioService {
   }
 
   private assertId(id: string): void {
-    if (!ENDPOINT_ID_PATTERN.test(id)) throw new Error('Invalid audio endpoint id')
+    if (!ENDPOINT_ID_PATTERN.test(id)) throw new Error('无效的音频端点 ID')
   }
 
   private assertRc(stdout: string, operation: string): void {
     const match = /RC=(-?\d+)/.exec(stdout)
     if (!match || Number(match[1]) !== 0) {
-      throw new Error(`Failed to ${operation} (HRESULT ${match ? match[1] : 'unknown'})`)
+      throw new Error(`操作失败：${operation}（HRESULT ${match ? match[1] : '未知'}）`)
     }
   }
 }

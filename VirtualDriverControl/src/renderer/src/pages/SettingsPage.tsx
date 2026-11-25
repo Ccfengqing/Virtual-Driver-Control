@@ -52,9 +52,9 @@ export function SettingsPage(): React.JSX.Element {
     if (result.ok) {
       await load()
       await refreshBackups()
-      toast('success', 'Backup restored', `${backup.fileName} is now the active configuration. Apply to reload the driver.`)
+      toast('success', '备份已恢复', `${backup.fileName} 现已成为当前配置。请点击应用以重新加载驱动。`)
     } else {
-      toast('error', 'Restore failed', result.error)
+      toast('error', '恢复失败', result.error)
     }
   }
 
@@ -62,48 +62,48 @@ export function SettingsPage(): React.JSX.Element {
     <div className="page-inner">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Settings</h1>
-          <p className="page-subtitle">Driver behavior, configuration file management and app preferences</p>
+          <h1 className="page-title">设置</h1>
+          <p className="page-subtitle">驱动行为、配置文件管理与应用偏好</p>
         </div>
       </div>
 
       <div className="card-grid two">
-        <Card icon={MousePointer2} title="Cursor">
+        <Card icon={MousePointer2} title="光标">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
             <Toggle
               checked={draft.cursor.hardwareCursor}
               onChange={(v) => patch((d) => (d.cursor.hardwareCursor = v))}
-              label="Hardware cursor"
-              sublabel="Composite the cursor on the GPU (recommended)"
+              label="硬件光标"
+              sublabel="由 GPU 合成光标（推荐）"
             />
             <Toggle
               checked={draft.cursor.alphaCursorSupport}
               onChange={(v) => patch((d) => (d.cursor.alphaCursorSupport = v))}
-              label="Alpha-blended cursor"
+              label="Alpha 混合光标"
             />
             <div className="grid-2">
               <NumberField
-                label="Max cursor width"
+                label="光标最大宽度"
                 value={draft.cursor.cursorMaxX}
                 min={16}
                 max={512}
                 onChange={(v) => patch((d) => (d.cursor.cursorMaxX = v))}
               />
               <NumberField
-                label="Max cursor height"
+                label="光标最大高度"
                 value={draft.cursor.cursorMaxY}
                 min={16}
                 max={512}
                 onChange={(v) => patch((d) => (d.cursor.cursorMaxY = v))}
               />
             </div>
-            <Field label="XOR cursor support level" hint="Known upstream quirk: loaded by the driver but not applied">
+            <Field label="XOR 光标支持级别" hint="已知上游问题：会被驱动加载但不生效">
               <Segmented
                 value={String(draft.cursor.xorCursorSupportLevel) as '0' | '1' | '2'}
                 options={[
-                  { value: '0', label: 'None' },
-                  { value: '1', label: 'Emulated' },
-                  { value: '2', label: 'Full' }
+                  { value: '0', label: '无' },
+                  { value: '1', label: '模拟' },
+                  { value: '2', label: '完整' }
                 ]}
                 onChange={(v) => patch((d) => (d.cursor.xorCursorSupportLevel = Number(v)))}
               />
@@ -111,25 +111,25 @@ export function SettingsPage(): React.JSX.Element {
           </div>
         </Card>
 
-        <Card icon={FileText} title="Logging">
+        <Card icon={FileText} title="日志">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
             <Toggle
               checked={draft.logging.sendLogsThroughPipe}
               onChange={(v) => patch((d) => (d.logging.sendLogsThroughPipe = v))}
-              label="Stream logs through pipe"
-              sublabel="Lets this app capture live responses from the driver"
+              label="通过管道传输日志"
+              sublabel="让本应用捕获驱动的实时响应"
             />
             <Toggle
               checked={draft.logging.logging}
               onChange={(v) => patch((d) => (d.logging.logging = v))}
-              label="File logging"
-              sublabel="Daily log files in the Logs folder"
+              label="文件日志"
+              sublabel="在 Logs 文件夹中每天生成日志文件"
             />
             <Toggle
               checked={draft.logging.debugLogging}
               onChange={(v) => patch((d) => (d.logging.debugLogging = v))}
-              label="Debug logging"
-              sublabel="Warning: verbose - creates large files quickly"
+              label="调试日志"
+              sublabel="警告：内容详细 - 会快速生成大文件"
             />
           </div>
         </Card>
@@ -137,8 +137,8 @@ export function SettingsPage(): React.JSX.Element {
 
       <Card
         icon={Wand2}
-        title="Auto resolutions"
-        subtitle="Generate display modes from the EDID profile instead of the manual list"
+        title="自动分辨率"
+        subtitle="从 EDID 配置而非手动列表生成显示模式"
         actions={<Toggle checked={draft.autoResolutions.enabled} onChange={(v) => patch((d) => (d.autoResolutions.enabled = v))} />}
       >
         <div
@@ -150,55 +150,55 @@ export function SettingsPage(): React.JSX.Element {
             pointerEvents: draft.autoResolutions.enabled ? 'auto' : 'none'
           }}
         >
-          <Field label="Source priority">
+          <Field label="来源优先级">
             <Segmented
               value={draft.autoResolutions.sourcePriority as 'manual' | 'edid' | 'combined'}
               options={[
-                { value: 'manual', label: 'Manual list' },
-                { value: 'edid', label: 'EDID modes' },
-                { value: 'combined', label: 'Combined' }
+                { value: 'manual', label: '手动列表' },
+                { value: 'edid', label: 'EDID 模式' },
+                { value: 'combined', label: '合并' }
               ]}
               onChange={(v) => patch((d) => (d.autoResolutions.sourcePriority = v))}
             />
           </Field>
           <div className="grid-4">
             <NumberField
-              label="Min refresh (Hz)"
+              label="最小刷新率 (Hz)"
               value={draft.autoResolutions.edidModeFiltering.minRefreshRate}
               min={1}
               max={1000}
               onChange={(v) => patch((d) => (d.autoResolutions.edidModeFiltering.minRefreshRate = v))}
             />
             <NumberField
-              label="Max refresh (Hz)"
+              label="最大刷新率 (Hz)"
               value={draft.autoResolutions.edidModeFiltering.maxRefreshRate}
               min={1}
               max={1000}
               onChange={(v) => patch((d) => (d.autoResolutions.edidModeFiltering.maxRefreshRate = v))}
             />
             <NumberField
-              label="Min width"
+              label="最小宽度"
               value={draft.autoResolutions.edidModeFiltering.minResolutionWidth}
               min={160}
               max={10240}
               onChange={(v) => patch((d) => (d.autoResolutions.edidModeFiltering.minResolutionWidth = v))}
             />
             <NumberField
-              label="Max width"
+              label="最大宽度"
               value={draft.autoResolutions.edidModeFiltering.maxResolutionWidth}
               min={160}
               max={10240}
               onChange={(v) => patch((d) => (d.autoResolutions.edidModeFiltering.maxResolutionWidth = v))}
             />
             <NumberField
-              label="Min height"
+              label="最小高度"
               value={draft.autoResolutions.edidModeFiltering.minResolutionHeight}
               min={120}
               max={4320}
               onChange={(v) => patch((d) => (d.autoResolutions.edidModeFiltering.minResolutionHeight = v))}
             />
             <NumberField
-              label="Max height"
+              label="最大高度"
               value={draft.autoResolutions.edidModeFiltering.maxResolutionHeight}
               min={120}
               max={4320}
@@ -208,23 +208,23 @@ export function SettingsPage(): React.JSX.Element {
           <Toggle
             checked={draft.autoResolutions.edidModeFiltering.excludeFractionalRates}
             onChange={(v) => patch((d) => (d.autoResolutions.edidModeFiltering.excludeFractionalRates = v))}
-            label="Exclude fractional refresh rates"
-            sublabel="Drop 59.94-style NTSC rates from generated modes"
+            label="排除小数刷新率"
+            sublabel="从生成的模式中剔除 59.94 这类 NTSC 刷新率"
           />
         </div>
       </Card>
 
       <Card
         icon={FileCode2}
-        title="Configuration file"
+        title="配置文件"
         subtitle={`${prefs.baseDir}\\vdd_settings.xml`}
         actions={
           <>
             <button type="button" className="btn ghost small" onClick={() => void window.vdd.system.openPath('base')}>
-              <FolderOpen size={13} /> Open folder
+              <FolderOpen size={13} /> 打开文件夹
             </button>
             <button type="button" className="btn small" onClick={() => void openXmlPreview()}>
-              <FileCode2 size={13} /> {dirty ? 'Preview changes' : 'View XML'}
+              <FileCode2 size={13} /> {dirty ? '预览更改' : '查看 XML'}
             </button>
           </>
         }
@@ -233,10 +233,10 @@ export function SettingsPage(): React.JSX.Element {
           <div className="row" style={{ gap: 8 }}>
             <History size={14} style={{ color: 'var(--text-faint)' }} />
             <span className="muted" style={{ fontWeight: 580 }}>
-              Backups ({backups.length})
+              备份 ({backups.length})
             </span>
             <span className="faint" style={{ fontSize: 12 }}>
-              created automatically before every save
+              每次保存前自动创建
             </span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7, maxHeight: 220, overflowY: 'auto' }}>
@@ -248,35 +248,35 @@ export function SettingsPage(): React.JSX.Element {
                 </span>
                 <span className="faint">{new Date(backup.createdAt).toLocaleString()}</span>
                 <button type="button" className="btn ghost small" onClick={() => void restoreBackup(backup)}>
-                  <RotateCcw size={12} /> Restore
+                  <RotateCcw size={12} /> 恢复
                 </button>
               </div>
             ))}
-            {backups.length === 0 && <span className="faint">No backups yet.</span>}
+            {backups.length === 0 && <span className="faint">暂无备份。</span>}
           </div>
         </div>
       </Card>
 
-      <Card icon={Paintbrush} title="App preferences">
+      <Card icon={Paintbrush} title="应用偏好">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <Field label="Theme">
+          <Field label="主题">
             <Segmented
               value={prefs.theme}
               options={[
-                { value: 'dark', label: 'Dark' },
-                { value: 'light', label: 'Light' },
-                { value: 'system', label: 'System' }
+                { value: 'dark', label: '深色' },
+                { value: 'light', label: '浅色' },
+                { value: 'system', label: '跟随系统' }
               ]}
               onChange={(v) => void updatePrefs({ theme: v })}
             />
           </Field>
-          <Field label="Accent color">
+          <Field label="强调色">
             <div className="row wrap" style={{ gap: 8 }}>
               {ACCENT_PRESETS.map((color) => (
                 <button
                   key={color}
                   type="button"
-                  aria-label={`Accent ${color}`}
+                  aria-label={`强调色 ${color}`}
                   style={{
                     width: 26,
                     height: 26,
@@ -297,13 +297,13 @@ export function SettingsPage(): React.JSX.Element {
 
       <Modal
         open={xmlOpen}
-        title={diff ? 'Pending changes to vdd_settings.xml' : 'vdd_settings.xml'}
+        title={diff ? 'vdd_settings.xml 待保存的更改' : 'vdd_settings.xml'}
         icon={FileCode2}
         onClose={() => setXmlOpen(false)}
         wide
         footer={
           <button type="button" className="btn ghost" onClick={() => setXmlOpen(false)}>
-            Close
+            关闭
           </button>
         }
       >
@@ -313,7 +313,7 @@ export function SettingsPage(): React.JSX.Element {
               'count' in line ? (
                 <div key={idx} className="diff-line ctx" style={{ opacity: 0.5, fontStyle: 'italic' }}>
                   <span className="gutter">⋯</span>
-                  <span> {line.count} unchanged lines</span>
+                  <span> {line.count} 行未更改</span>
                 </div>
               ) : (
                 <div key={idx} className={`diff-line ${line.type}`}>
@@ -362,9 +362,9 @@ function DriverFolderField(): React.JSX.Element {
       const result = await setBaseDir(target)
       if (result.ok) {
         await load()
-        toast('success', 'Driver folder updated', `Registry and app now point at ${result.prefs.baseDir}. Restart the driver device to apply.`)
+        toast('success', '驱动文件夹已更新', `注册表和应用现在都指向 ${result.prefs.baseDir}。请重启驱动设备以生效。`)
       } else {
-        toast('error', 'Folder not changed', result.error)
+        toast('error', '文件夹未更改', result.error)
       }
     } finally {
       setApplying(false)
@@ -373,8 +373,8 @@ function DriverFolderField(): React.JSX.Element {
 
   return (
     <Field
-      label="Driver folder"
-      hint={`The driver reads vdd_settings.xml from this folder (registry VDDPATH, default ${DEFAULT_BASE_DIR}). The app keeps both in sync automatically - changing it may prompt for elevation. Existing files are not moved.`}
+      label="驱动文件夹"
+      hint={`驱动从此文件夹读取 vdd_settings.xml（注册表 VDDPATH，默认 ${DEFAULT_BASE_DIR}）。应用会自动保持两者同步 - 更改时可能提示提权。现有文件不会被移动。`}
     >
       <div className="row" style={{ gap: 8 }}>
         <input
@@ -387,11 +387,11 @@ function DriverFolderField(): React.JSX.Element {
           onKeyDown={(e) => e.key === 'Enter' && edited && void apply(value.trim())}
         />
         <button type="button" className="btn small primary" disabled={!edited || applying} onClick={() => void apply(value.trim())}>
-          {applying ? 'Applying…' : 'Apply'}
+          {applying ? '应用中…' : '应用'}
         </button>
         {!isDefault && (
           <button type="button" className="btn ghost small" disabled={applying} onClick={() => void apply(DEFAULT_BASE_DIR)}>
-            Reset to default
+            恢复默认
           </button>
         )}
       </div>

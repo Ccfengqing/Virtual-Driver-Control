@@ -36,7 +36,7 @@ class AudioRouter {
       for (const track of stream.getVideoTracks()) track.stop()
       if (stream.getAudioTracks().length === 0) {
         for (const track of stream.getTracks()) track.stop()
-        throw new Error('System audio loopback is unavailable on this system')
+        throw new Error('此系统不支持系统音频回环')
       }
     } else {
       stream = await navigator.mediaDevices.getUserMedia({

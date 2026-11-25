@@ -73,7 +73,7 @@ export const useAudio = create<AudioState>((set, get) => ({
         active.delete(routeId)
         return {
           activeRoutes: active,
-          routeErrors: { ...s.routeErrors, [routeId]: 'Source device stopped (unplugged or removed)' }
+          routeErrors: { ...s.routeErrors, [routeId]: '来源设备已停止（拔出或移除）' }
         }
       })
     })
@@ -119,7 +119,7 @@ export const useAudio = create<AudioState>((set, get) => ({
       const dedupe = (kind: MediaDeviceKind): WebAudioDevice[] =>
         devices
           .filter((d) => d.kind === kind && d.deviceId !== 'default' && d.deviceId !== 'communications')
-          .map((d) => ({ deviceId: d.deviceId, label: d.label || 'Unnamed device' }))
+          .map((d) => ({ deviceId: d.deviceId, label: d.label || '未命名设备' }))
       set({ webInputs: dedupe('audioinput'), webOutputs: dedupe('audiooutput') })
     } catch {
       // media enumeration unavailable
@@ -135,7 +135,7 @@ export const useAudio = create<AudioState>((set, get) => ({
       window.setTimeout(() => {
         volumeTimers.delete(id)
         window.vdd.audio.setVolume(id, volume).catch((error: unknown) => {
-          useUi.getState().toast('error', 'Volume change failed', error instanceof Error ? error.message : String(error))
+          useUi.getState().toast('error', '音量更改失败', error instanceof Error ? error.message : String(error))
         })
       }, 150)
     )
@@ -146,7 +146,7 @@ export const useAudio = create<AudioState>((set, get) => ({
     try {
       await window.vdd.audio.setMute(id, muted)
     } catch (error) {
-      useUi.getState().toast('error', 'Mute change failed', error instanceof Error ? error.message : String(error))
+      useUi.getState().toast('error', '静音更改失败', error instanceof Error ? error.message : String(error))
       await get().refreshEndpoints()
     }
   },
@@ -156,9 +156,9 @@ export const useAudio = create<AudioState>((set, get) => ({
       await window.vdd.audio.setDefault(id)
       await get().refreshEndpoints()
       const endpoint = get().endpoints.find((e) => e.id === id)
-      useUi.getState().toast('success', 'Default device changed', endpoint?.name)
+      useUi.getState().toast('success', '默认设备已更改', endpoint?.name)
     } catch (error) {
-      useUi.getState().toast('error', 'Failed to set default device', error instanceof Error ? error.message : String(error))
+      useUi.getState().toast('error', '设置默认设备失败', error instanceof Error ? error.message : String(error))
     }
   },
 

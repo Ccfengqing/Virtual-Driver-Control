@@ -132,10 +132,10 @@ export class SettingsService {
   async restoreBackup(fileName: string): Promise<SaveResult> {
     try {
       if (!/^vdd_settings_[\d\-_]+\.xml$/.test(fileName)) {
-        return { ok: false, error: 'Invalid backup file name' }
+        return { ok: false, error: '无效的备份文件名' }
       }
       const source = join(this.backupsDir, fileName)
-      if (!existsSync(source)) return { ok: false, error: 'Backup not found' }
+      if (!existsSync(source)) return { ok: false, error: '未找到备份' }
       const backupCreated = await this.backupCurrent()
       await fs.copyFile(source, this.settingsPath)
       return { ok: true, backupCreated }

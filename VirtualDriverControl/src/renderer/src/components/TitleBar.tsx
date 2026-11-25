@@ -6,10 +6,10 @@ import logoWarn from '../assets/logo-warn.png'
 import logoErr from '../assets/logo-err.png'
 
 const LEVEL_META: Record<string, { className: string; label: string; logo: string }> = {
-  online: { className: 'online', label: 'Driver online', logo: logoOk },
-  'installed-offline': { className: 'offline', label: 'Installed, not responding', logo: logoWarn },
-  'not-installed': { className: 'missing', label: 'Driver not installed', logo: logoErr },
-  unknown: { className: 'unknown', label: 'Checking driver…', logo: logoErr }
+  online: { className: 'online', label: '驱动在线', logo: logoOk },
+  'installed-offline': { className: 'offline', label: '已安装，无响应', logo: logoWarn },
+  'not-installed': { className: 'missing', label: '未安装驱动', logo: logoErr },
+  unknown: { className: 'unknown', label: '正在检查驱动…', logo: logoErr }
 }
 
 export function TitleBar(): React.JSX.Element {
@@ -24,7 +24,7 @@ export function TitleBar(): React.JSX.Element {
     <header className="titlebar">
       <div className="brand">
         <img className="brand-mark" src={meta.logo} alt="" title={meta.label} />
-        Virtual Driver Control
+        虚拟显示器控制中心
       </div>
 
       <div className="titlebar-status" title={status?.deviceName ?? ''}>
@@ -40,22 +40,22 @@ export function TitleBar(): React.JSX.Element {
       )}
 
       {sysInfo && !sysInfo.isAdmin && (
-        <div className="titlebar-status" style={{ color: 'var(--warning)' }} title="Saving to C:\VirtualDisplayDriver may fail without elevation">
+        <div className="titlebar-status" style={{ color: 'var(--warning)' }} title="未提权时可能无法写入 C:\VirtualDisplayDriver">
           <ShieldAlert size={12} />
-          Not elevated
+          未提权
         </div>
       )}
 
       <div className="titlebar-spacer" />
 
       <div className="window-controls">
-        <button type="button" aria-label="Minimize" onClick={() => window.vdd.window.minimize()}>
+        <button type="button" aria-label="最小化" onClick={() => window.vdd.window.minimize()}>
           <Minus size={15} />
         </button>
-        <button type="button" aria-label="Maximize" onClick={() => window.vdd.window.maximizeToggle()}>
+        <button type="button" aria-label="最大化" onClick={() => window.vdd.window.maximizeToggle()}>
           {maximized ? <Copy size={12} style={{ transform: 'scaleX(-1)' }} /> : <Square size={11} />}
         </button>
-        <button type="button" aria-label="Close" className="close" onClick={() => window.vdd.window.close()}>
+        <button type="button" aria-label="关闭" className="close" onClick={() => window.vdd.window.close()}>
           <X size={16} />
         </button>
       </div>

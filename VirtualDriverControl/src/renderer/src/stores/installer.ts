@@ -129,11 +129,11 @@ export const useInstaller = create<InstallerState>((set, get) => {
         driver,
         'install',
         () => window.vdd.installer.install(driver, instances),
-        'Driver installed',
+        '驱动已安装',
         driver === 'display'
-          ? 'The Virtual Display Driver is now installed and starting up.'
-          : 'The Virtual Audio Driver is now installed - new audio devices should appear shortly.',
-        'Install failed'
+          ? '虚拟显示器驱动已安装，正在启动。'
+          : '虚拟音频驱动已安装 - 新的音频设备即将出现。',
+        '安装失败'
       ),
 
     uninstallDriver: (driver) =>
@@ -141,9 +141,9 @@ export const useInstaller = create<InstallerState>((set, get) => {
         driver,
         'uninstall',
         () => window.vdd.installer.uninstall(driver),
-        'Driver uninstalled',
-        driver === 'display' ? 'Configuration files were kept for a future reinstall.' : undefined,
-        'Uninstall failed'
+        '驱动已卸载',
+        driver === 'display' ? '配置文件已保留，供日后重新安装使用。' : undefined,
+        '卸载失败'
       ),
 
     restartDevice: (driver) =>
@@ -151,9 +151,9 @@ export const useInstaller = create<InstallerState>((set, get) => {
         driver,
         'restart',
         () => window.vdd.installer.restartDevice(driver),
-        'Device restarted',
-        'The device was disabled and re-enabled.',
-        'Restart failed'
+        '设备已重启',
+        '设备已停用后重新启用。',
+        '重启失败'
       ),
 
     setInstances: (driver, count) =>
@@ -161,9 +161,9 @@ export const useInstaller = create<InstallerState>((set, get) => {
         driver,
         'instances',
         () => window.vdd.installer.setInstances(driver, count),
-        'Device count updated',
-        `${count} virtual audio device${count === 1 ? '' : 's'} now present.`,
-        'Failed to change device count'
+        '设备数已更新',
+        `现有 ${count} 个虚拟音频设备。`,
+        '更改设备数失败'
       ),
 
     refreshTestSigning: async () => {
@@ -181,9 +181,9 @@ export const useInstaller = create<InstallerState>((set, get) => {
       try {
         const result = await window.vdd.installer.setTestSigning(enabled)
         if (result.ok) {
-          toast('success', `Test signing ${enabled ? 'enabled' : 'disabled'}`, 'Restart Windows for the change to take effect.')
+          toast('success', `测试签名已${enabled ? '启用' : '禁用'}`, '请重启 Windows 使更改生效。')
         } else {
-          toast('error', 'Test signing change failed', result.error ?? result.detail)
+          toast('error', '测试签名更改失败', result.error ?? result.detail)
         }
       } finally {
         set({ working: null, progress: null })

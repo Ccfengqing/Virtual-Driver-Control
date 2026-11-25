@@ -174,7 +174,7 @@ export function CieDiagram(props: {
         height={height}
         style={{ position: 'absolute', inset: 0, touchAction: 'none' }}
         role="application"
-        aria-label="Chromaticity diagram"
+        aria-label="色度图"
       >
         <polygon points={srgbPoints} fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth={1} strokeDasharray="4 4" />
         <polygon points={trianglePoints} fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.85)" strokeWidth={1.5} />

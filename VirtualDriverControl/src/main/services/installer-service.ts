@@ -128,7 +128,7 @@ export class InstallerService {
     const response = await fetch(`https://api.github.com/repos/${spec.repo}/releases/latest`, {
       headers: { 'User-Agent': 'Virtual-Driver-Control', Accept: 'application/vnd.github+json' }
     })
-    if (!response.ok) throw new Error(`GitHub API responded ${response.status}`)
+    if (!response.ok) throw new Error(`GitHub API 响应 ${response.status}`)
     const release = (await response.json()) as GithubRelease
 
     const assetName = spec.pickAsset(release.assets.map((a) => a.name))
@@ -212,21 +212,21 @@ export class InstallerService {
       this.emitProgress({
         phase: 'install',
         percent: -1,
-        message: `${enabled ? 'Enabling' : 'Disabling'} Windows test signing (this may prompt for elevation)…`
+        message: `${enabled ? '正在启用' : '正在禁用'} Windows 测试签名（可能会弹出提权提示）…`
       })
       return this.runElevated(`
-Write-Output "== Windows test signing: ${enabled ? 'enable' : 'disable'} =="
+Write-Output "== Windows 测试签名：${enabled ? '启用' : '禁用'} =="
 $out = bcdedit /set "{current}" testsigning ${enabled ? 'on' : 'off'} 2>&1 | Out-String
 Write-Output $out.Trim()
 if ($LASTEXITCODE -ne 0) {
   if ($out -match 'Secure Boot') {
-    Write-Output "RESULT: blocked by Secure Boot - disable Secure Boot in the UEFI firmware settings first"
+    Write-Output "结果：被安全启动阻止 - 请先在 UEFI 固件设置中禁用安全启动"
   } else {
-    Write-Output "RESULT: bcdedit failed with exit code $LASTEXITCODE"
+    Write-Output "结果：bcdedit 失败，退出代码 $LASTEXITCODE"
   }
   $script:failed = $true
 } else {
-  Write-Output "RESULT: test signing ${enabled ? 'enabled' : 'disabled'} - restart Windows for the change to take effect"
+  Write-Output "结果：测试签名${enabled ? '已启用' : '已禁用'} - 请重启 Windows 使更改生效"
 }
 `)
     })
@@ -241,11 +241,11 @@ if ($LASTEXITCODE -ne 0) {
     const target = clampInstances(instances, spec)
     return this.exclusive(async () => {
       const release = await this.latestRelease(driver)
-      if (!release.asset) return { ok: false, error: `Release ${release.tag} has no driver package for ${os.arch()}` }
+      if (!release.asset) return { ok: false, error: `版本 ${release.tag} 没有适用于 ${os.arch()} 的驱动包` }
 
       const url = new URL(release.asset.downloadUrl)
       if (url.protocol !== 'https:' || !ALLOWED_DOWNLOAD_HOSTS.has(url.hostname)) {
-        return { ok: false, error: `Refusing download from unexpected host: ${url.hostname}` }
+        return { ok: false, error: `拒绝从意外主机下载：${url.hostname}` }
       }
 
       // 1. Download with progress.
@@ -255,16 +255,16 @@ if ($LASTEXITCODE -ne 0) {
       await this.downloadFile(release.asset.downloadUrl, zipPath, release.asset.sizeBytes)
 
       // 2. Verify checksum against the digest GitHub publishes for the asset.
-      this.emitProgress({ phase: 'verify', percent: -1, message: 'Verifying package integrity…' })
+      this.emitProgress({ phase: 'verify', percent: -1, message: '正在校验安装包完整性…' })
       if (release.asset.sha256) {
         const actual = createHash('sha256').update(await fs.readFile(zipPath)).digest('hex')
         if (actual.toLowerCase() !== release.asset.sha256.toLowerCase()) {
-          return { ok: false, error: `Checksum mismatch - expected ${release.asset.sha256}, got ${actual}` }
+          return { ok: false, error: `校验和不匹配 - 期望 ${release.asset.sha256}，实际 ${actual}` }
         }
       }
 
       // 3. Extract.
-      this.emitProgress({ phase: 'extract', percent: -1, message: 'Extracting driver package…' })
+      this.emitProgress({ phase: 'extract', percent: -1, message: '正在解压驱动包…' })
       const extractDir = join(workDir, 'extracted')
       await execFileAsync(
         'powershell.exe',
@@ -272,19 +272,19 @@ if ($LASTEXITCODE -ne 0) {
         { windowsHide: true, timeout: 60_000 }
       )
       const infPath = await this.findFile(extractDir, new RegExp(`^${spec.infName.replace('.', '\\.')}$`, 'i'))
-      if (!infPath) return { ok: false, error: `Driver package did not contain ${spec.infName}` }
+      if (!infPath) return { ok: false, error: `驱动包中未找到 ${spec.infName}` }
       const packageDir = infPath.slice(0, infPath.lastIndexOf('\\'))
 
       // 4. Make sure the nefcon install tool is available.
       const nefcon = await this.ensureNefcon()
 
       // 5. Elevated install.
-      this.emitProgress({ phase: 'install', percent: -1, message: `Installing ${spec.title} (this may prompt for elevation)…` })
+      this.emitProgress({ phase: 'install', percent: -1, message: `正在安装 ${spec.title}（可能会弹出提权提示）…` })
       const result = await this.runElevated(this.buildInstallScript(driver, packageDir, target, nefcon))
       if (!result.ok) return result
 
       // 6. Record what we installed.
-      this.emitProgress({ phase: 'finalize', percent: -1, message: 'Finishing up…' })
+      this.emitProgress({ phase: 'finalize', percent: -1, message: '正在收尾…' })
       try {
         await fs.writeFile(
           this.markerPath(driver),
@@ -302,7 +302,7 @@ if ($LASTEXITCODE -ne 0) {
   async uninstall(driver: ManagedDriverId): Promise<LifecycleResult> {
     return this.exclusive(async () => {
       const nefcon = await this.ensureNefcon()
-      this.emitProgress({ phase: 'install', percent: -1, message: `Removing ${DRIVERS[driver].title} (this may prompt for elevation)…` })
+      this.emitProgress({ phase: 'install', percent: -1, message: `正在移除 ${DRIVERS[driver].title}（可能会弹出提权提示）…` })
       const result = await this.runElevated(this.buildUninstallScript(driver, nefcon))
       if (result.ok) await fs.rm(this.markerPath(driver), { force: true }).catch(() => undefined)
       return result
@@ -311,7 +311,7 @@ if ($LASTEXITCODE -ne 0) {
 
   async restartDevice(driver: ManagedDriverId): Promise<LifecycleResult> {
     return this.exclusive(async () => {
-      this.emitProgress({ phase: 'install', percent: -1, message: 'Restarting device (this may prompt for elevation)…' })
+      this.emitProgress({ phase: 'install', percent: -1, message: '正在重启设备（可能会弹出提权提示）…' })
       return this.runElevated(this.buildRestartScript(driver))
     })
   }
@@ -319,11 +319,11 @@ if ($LASTEXITCODE -ne 0) {
   /** Create or remove device nodes so exactly `count` instances exist (audio driver). */
   async setInstances(driver: ManagedDriverId, count: number): Promise<LifecycleResult> {
     const spec = DRIVERS[driver]
-    if (spec.maxInstances < 2) return { ok: false, error: `${spec.title} does not support multiple instances` }
+    if (spec.maxInstances < 2) return { ok: false, error: `${spec.title} 不支持多实例` }
     const target = clampInstances(count, spec)
     return this.exclusive(async () => {
       const nefcon = await this.ensureNefcon()
-      this.emitProgress({ phase: 'install', percent: -1, message: `Setting ${spec.title} to ${target} device${target === 1 ? '' : 's'}…` })
+      this.emitProgress({ phase: 'install', percent: -1, message: `正在将 ${spec.title} 设置为 ${target} 个设备…` })
       return this.runElevated(this.buildSetInstancesScript(driver, target, nefcon))
     })
   }
@@ -348,15 +348,15 @@ if ($LASTEXITCODE -ne 0) {
     const exePath = join(toolDir, archDir, 'nefconc.exe')
     if (await pathExists(exePath)) return exePath
 
-    this.emitProgress({ phase: 'download', percent: -1, message: `Downloading nefcon ${NEFCON.tag} (device install tool)…` })
+    this.emitProgress({ phase: 'download', percent: -1, message: `正在下载 nefcon ${NEFCON.tag}（设备安装工具）…` })
     const zipPath = join(app.getPath('temp'), `nefcon-${Date.now()}.zip`)
     try {
       await this.downloadFile(NEFCON.url, zipPath, 0)
 
-      this.emitProgress({ phase: 'verify', percent: -1, message: 'Verifying nefcon integrity…' })
+      this.emitProgress({ phase: 'verify', percent: -1, message: '正在校验 nefcon 完整性…' })
       const actual = createHash('sha256').update(await fs.readFile(zipPath)).digest('hex')
       if (actual.toLowerCase() !== NEFCON.sha256) {
-        throw new Error(`nefcon download failed checksum verification (expected ${NEFCON.sha256}, got ${actual})`)
+        throw new Error(`nefcon 下载校验和验证失败（期望 ${NEFCON.sha256}，实际 ${actual}）`)
       }
 
       await fs.mkdir(toolDir, { recursive: true })
@@ -365,7 +365,7 @@ if ($LASTEXITCODE -ne 0) {
         ['-NoProfile', '-NonInteractive', '-Command', `Expand-Archive -Force -LiteralPath '${zipPath}' -DestinationPath '${toolDir}'`],
         { windowsHide: true, timeout: 60_000 }
       )
-      if (!(await pathExists(exePath))) throw new Error('nefcon package did not contain the expected binary')
+      if (!(await pathExists(exePath))) throw new Error('nefcon 包中未找到预期的可执行文件')
       return exePath
     } finally {
       void fs.rm(zipPath, { force: true }).catch(() => undefined)
@@ -373,7 +373,7 @@ if ($LASTEXITCODE -ne 0) {
   }
 
   private async exclusive(operation: () => Promise<LifecycleResult>): Promise<LifecycleResult> {
-    if (this.busy) return { ok: false, error: 'Another driver operation is already running' }
+    if (this.busy) return { ok: false, error: '另一个驱动操作正在进行中' }
     this.busy = true
     try {
       return await operation()
@@ -386,7 +386,7 @@ if ($LASTEXITCODE -ne 0) {
 
   private async downloadFile(url: string, destination: string, expectedSize: number): Promise<void> {
     const response = await fetch(url, { headers: { 'User-Agent': 'Virtual-Driver-Control' } })
-    if (!response.ok || !response.body) throw new Error(`Download failed with HTTP ${response.status}`)
+    if (!response.ok || !response.body) throw new Error(`下载失败，HTTP ${response.status}`)
 
     const total = Number(response.headers.get('content-length')) || expectedSize || 0
     const out = createWriteStream(destination)
@@ -403,7 +403,7 @@ if ($LASTEXITCODE -ne 0) {
         this.emitProgress({
           phase: 'download',
           percent: total > 0 ? Math.round((received / total) * 100) : -1,
-          message: `Downloading ${(received / 1024).toFixed(0)} KB${total > 0 ? ` of ${(total / 1024).toFixed(0)} KB` : ''}…`
+          message: `正在下载 ${(received / 1024).toFixed(0)} KB${total > 0 ? ` / ${(total / 1024).toFixed(0)} KB` : ''}…`
         })
       }
     } finally {
@@ -467,7 +467,7 @@ if ($LASTEXITCODE -ne 0) {
           const failure = error as { code?: number; message?: string; stderr?: string }
           // UAC decline surfaces as a launcher error ("canceled by the user").
           if (/canceled|cancelled/i.test(`${failure.message ?? ''} ${failure.stderr ?? ''}`)) {
-            return { ok: false, error: 'Elevation was declined - the operation was cancelled.' }
+            return { ok: false, error: '已拒绝提权 - 操作已取消。' }
           }
           exitCode = failure.code ?? 1
         }
@@ -476,7 +476,7 @@ if ($LASTEXITCODE -ne 0) {
       const log = await fs.readFile(logPath, 'utf8').catch(() => '')
       const detail = summarizeTranscript(log)
       if (exitCode === 0) return { ok: true, detail }
-      return { ok: false, error: `Operation failed (exit ${exitCode})`, detail }
+      return { ok: false, error: `操作失败（退出代码 ${exitCode}）`, detail }
     } finally {
       void fs.rm(scriptPath, { force: true }).catch(() => undefined)
       void fs.rm(logPath, { force: true }).catch(() => undefined)
@@ -497,7 +497,7 @@ New-Item -ItemType Directory -Force -Path $base | Out-Null
 $preserve = @(${spec.preserveFiles.map((f) => `'${f}'`).join(',')})
 foreach ($f in Get-ChildItem -File $pkg) {
   if (($preserve -contains $f.Name) -and (Test-Path (Join-Path $base $f.Name))) {
-    Write-Output ("Keeping existing " + $f.Name)
+    Write-Output ("保留现有文件 " + $f.Name)
     continue
   }
   Copy-Item -Force $f.FullName (Join-Path $base $f.Name)
@@ -506,7 +506,7 @@ foreach ($f in Get-ChildItem -File $pkg) {
 # --- Point the driver's settings lookup (VDDPATH) at this folder ---
 New-Item -Path 'HKLM:\\SOFTWARE\\MikeTheTech\\VirtualDisplayDriver' -Force | Out-Null
 Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\MikeTheTech\\VirtualDisplayDriver' -Name 'VDDPATH' -Value $base -Force
-Write-Output "VDDPATH registry value set to $base"
+Write-Output "VDDPATH 注册表值已设置为 $base"
 `
       : ''
 
@@ -521,12 +521,12 @@ $bin = Join-Path $pkg '${spec.signedBinary}'
 $nefcon = '${nefconPath}'
 $target = ${instances}
 
-Write-Output "== ${spec.title} install =="
+Write-Output "== 安装 ${spec.title} =="
 ${copyBlock}
 # --- Trust the package signer so the driver installs silently ---
 $sig = Get-AuthenticodeSignature $bin
 if ($sig.SignerCertificate) {
-  Write-Output ("Trusting signer: " + $sig.SignerCertificate.Subject)
+  Write-Output ("信任签名者：" + $sig.SignerCertificate.Subject)
   foreach ($storeName in @('TrustedPublisher','Root')) {
     $store = New-Object System.Security.Cryptography.X509Certificates.X509Store($storeName, 'LocalMachine')
     $store.Open('ReadWrite')
@@ -534,33 +534,33 @@ if ($sig.SignerCertificate) {
     $store.Close()
   }
 } else {
-  Write-Output "WARNING: package is unsigned"
+  Write-Output "警告：安装包未签名"
 }
 
 # --- Create the device node and install the driver via nefcon ---
-Write-Output "Installing driver via nefcon (devcon-compatible install)"
+Write-Output "正在通过 nefcon 安装驱动（兼容 devcon 的安装方式）"
 & $nefcon install "$inf" '${spec.hardwareId}' ${installFlags} 2>&1 | ForEach-Object { Write-Output $_ }
 $rc = $LASTEXITCODE
 if ($rc -eq 3010) {
-  Write-Output "NOTE: Windows reports a reboot is required to finish the install"
+  Write-Output "注意：Windows 报告需要重启才能完成安装"
 } elseif ($rc -ne 0) {
-  Write-Output "nefcon install failed with exit code $rc"
+  Write-Output "nefcon 安装失败，退出代码 $rc"
   $script:failed = $true
 }
 
 # --- Create any additional device nodes up to the target count ---
 $existing = @(Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.HardwareID -match '${spec.hardwareIdPattern}' })
-Write-Output ("Existing device nodes: " + $existing.Count + ", target: " + $target)
+Write-Output ("现有设备节点：" + $existing.Count + "，目标：" + $target)
 $toCreate = $target - $existing.Count
 if (-not $script:failed -and $toCreate -gt 0) {
   for ($i = 0; $i -lt $toCreate; $i++) {
     & $nefcon --create-device-node --hardware-id '${spec.hardwareId}' --class-name '${spec.className}' --class-guid '${spec.classGuid}' 2>&1 | ForEach-Object { Write-Output $_ }
     if ($LASTEXITCODE -ne 0) {
-      Write-Output "Device node creation failed with exit code $LASTEXITCODE"
+      Write-Output "设备节点创建失败，退出代码 $LASTEXITCODE"
       $script:failed = $true
       break
     }
-    Write-Output ("Device node " + ($existing.Count + $i + 1) + " created")
+    Write-Output ("设备节点 " + ($existing.Count + $i + 1) + " 已创建")
   }
   # Bind the staged driver to the freshly created nodes.
   & $nefcon --install-driver --inf-path "$inf" 2>&1 | ForEach-Object { Write-Output $_ }
@@ -570,9 +570,9 @@ if (-not $script:failed -and $toCreate -gt 0) {
 Start-Sleep -Seconds 2
 $dev = @(Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.HardwareID -match '${spec.hardwareIdPattern}' })
 if ($dev.Count -gt 0) {
-  Write-Output ("RESULT: " + $dev.Count + " device(s) present, status " + (($dev | ForEach-Object { $_.Status }) -join ', '))
+  Write-Output ("结果：" + $dev.Count + " 个设备存在，状态 " + (($dev | ForEach-Object { $_.Status }) -join ', '))
 } else {
-  Write-Output "RESULT: device not found after install"
+  Write-Output "结果：安装后未找到设备"
   $script:failed = $true
 }
 `
@@ -582,19 +582,19 @@ if ($dev.Count -gt 0) {
     const spec = DRIVERS[driver]
     return `
 $nefcon = '${nefconPath}'
-Write-Output "== ${spec.title} uninstall =="
+Write-Output "== 卸载 ${spec.title} =="
 
 # --- Remove the device node(s) and driver via nefcon ---
 $devices = @(Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.HardwareID -match '${spec.hardwareIdPattern}' })
 if ($devices.Count -gt 0) {
-  Write-Output ("Removing " + $devices.Count + " device node(s) via nefcon")
+  Write-Output ("正在通过 nefcon 移除 " + $devices.Count + " 个设备节点")
   & $nefcon --remove-device-node --hardware-id '${spec.hardwareId}' --class-guid '${spec.classGuid}' 2>&1 | ForEach-Object { Write-Output $_ }
   if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 3010) {
-    Write-Output "nefcon remove-device-node failed with exit code $LASTEXITCODE"
+    Write-Output "nefcon remove-device-node 失败，退出代码 $LASTEXITCODE"
     $script:failed = $true
   }
 } else {
-  Write-Output "No ${spec.title} device present"
+  Write-Output "未发现 ${spec.title} 设备"
 }
 
 # --- Sweep any leftover staged package(s) out of the driver store ---
@@ -604,35 +604,35 @@ foreach ($b in $blocks) {
   if ($b -match '${spec.infName.replace('.', '\\.')}') {
     if ($b -match 'Published Name\\s*:\\s*(oem\\d+\\.inf)') {
       $oem = $Matches[1]
-      Write-Output "Deleting driver package $oem"
+      Write-Output "正在删除驱动包 $oem"
       pnputil /delete-driver $oem /uninstall /force 2>&1 | ForEach-Object { Write-Output $_ }
     }
   }
 }
 
-Write-Output "RESULT: uninstall complete (configuration files were kept)"
+Write-Output "结果：卸载完成（配置文件已保留）"
 `
   }
 
   private buildRestartScript(driver: ManagedDriverId): string {
     const spec = DRIVERS[driver]
     return `
-Write-Output "== ${spec.title} device restart =="
+Write-Output "== 重启 ${spec.title} 设备 =="
 $devices = Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.HardwareID -match '${spec.hardwareIdPattern}' }
 if (-not $devices) {
-  Write-Output "RESULT: no device found"
+  Write-Output "结果：未找到设备"
   $script:failed = $true
 } else {
   foreach ($d in $devices) {
-    Write-Output ("Restarting " + $d.InstanceId)
+    Write-Output ("正在重启 " + $d.InstanceId)
     pnputil /disable-device $d.InstanceId 2>&1 | ForEach-Object { Write-Output $_ }
     Start-Sleep -Seconds 2
     pnputil /enable-device $d.InstanceId 2>&1 | ForEach-Object { Write-Output $_ }
   }
   Start-Sleep -Seconds 2
   $after = Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.HardwareID -match '${spec.hardwareIdPattern}' -and $_.Status -eq 'OK' }
-  if ($after) { Write-Output "RESULT: device restarted, status OK" }
-  else { Write-Output "RESULT: device did not come back healthy"; $script:failed = $true }
+  if ($after) { Write-Output "结果：设备已重启，状态正常" }
+  else { Write-Output "结果：设备重启后未恢复正常"; $script:failed = $true }
 }
 `
   }
@@ -642,7 +642,7 @@ if (-not $devices) {
     return `
 $nefcon = '${nefconPath}'
 $target = ${target}
-Write-Output "== ${spec.title}: set instance count to $target =="
+Write-Output "== ${spec.title}：将实例数设为 $target =="
 
 # --- Locate the staged INF (needed to bind newly created devices) ---
 $oem = $null
@@ -654,40 +654,40 @@ foreach ($b in $blocks) {
   }
 }
 if (-not $oem) {
-  Write-Output "RESULT: driver is not installed - install it first"
+  Write-Output "结果：驱动未安装 - 请先安装"
   $script:failed = $true
 } else {
   $infPath = Join-Path $env:windir ('INF\\' + $oem)
-  Write-Output "Using staged driver $oem"
+  Write-Output "正在使用已暂存的驱动 $oem"
 
   $existing = @(Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.HardwareID -match '${spec.hardwareIdPattern}' } | Sort-Object InstanceId)
-  Write-Output ("Existing device nodes: " + $existing.Count)
+  Write-Output ("现有设备节点：" + $existing.Count)
 
   if ($existing.Count -lt $target) {
     for ($i = $existing.Count; $i -lt $target; $i++) {
       & $nefcon --create-device-node --hardware-id '${spec.hardwareId}' --class-name '${spec.className}' --class-guid '${spec.classGuid}' 2>&1 | ForEach-Object { Write-Output $_ }
       if ($LASTEXITCODE -ne 0) {
-        Write-Output "Device node creation failed with exit code $LASTEXITCODE"
+        Write-Output "设备节点创建失败，退出代码 $LASTEXITCODE"
         $script:failed = $true
         break
       }
-      Write-Output ("Device node " + ($i + 1) + " created")
+      Write-Output ("设备节点 " + ($i + 1) + " 已创建")
     }
     # Bind the staged driver to the freshly created nodes.
     & $nefcon --install-driver --inf-path "$infPath" 2>&1 | ForEach-Object { Write-Output $_ }
   } elseif ($existing.Count -gt $target) {
     $toRemove = $existing | Select-Object -Last ($existing.Count - $target)
     foreach ($d in $toRemove) {
-      Write-Output ("Removing device " + $d.InstanceId)
+      Write-Output ("正在移除设备 " + $d.InstanceId)
       pnputil /remove-device $d.InstanceId 2>&1 | ForEach-Object { Write-Output $_ }
     }
   } else {
-    Write-Output "Already at target count"
+    Write-Output "已达到目标数量"
   }
 
   Start-Sleep -Seconds 2
   $after = @(Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.HardwareID -match '${spec.hardwareIdPattern}' })
-  Write-Output ("RESULT: " + $after.Count + " device(s) present, status " + (($after | ForEach-Object { $_.Status }) -join ', '))
+  Write-Output ("结果：" + $after.Count + " 个设备存在，状态 " + (($after | ForEach-Object { $_.Status }) -join ', '))
   if ($after.Count -ne $target) { $script:failed = $true }
 }
 `

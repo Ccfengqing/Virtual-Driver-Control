@@ -89,7 +89,7 @@ export class PrefsService {
   async setBaseDir(rawPath: string): Promise<BaseDirResult> {
     const baseDir = normalizePath(rawPath)
     if (!SAFE_PATH_PATTERN.test(baseDir)) {
-      return { ok: false, prefs: this.prefs, error: 'Enter an absolute path like C:\\VirtualDisplayDriver' }
+      return { ok: false, prefs: this.prefs, error: '请输入绝对路径，例如 C:\\VirtualDisplayDriver' }
     }
 
     if (!(await this.writeRegistryDirect(baseDir))) {
@@ -103,7 +103,7 @@ export class PrefsService {
       return {
         ok: false,
         prefs: this.prefs,
-        error: 'The VDDPATH registry value could not be updated (elevation declined?). Folder left unchanged.'
+        error: '无法更新 VDDPATH 注册表值（可能拒绝了提权？）。文件夹未更改。'
       }
     }
 

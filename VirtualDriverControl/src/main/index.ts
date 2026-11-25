@@ -169,7 +169,7 @@ if (!gotLock) {
     // Ask for elevation up front so the driver folder, VDDPATH registry and
     // device operations all work without per-operation prompts. Declining
     // keeps the app fully usable as a standard user.
-    if (!(await driver.isAdmin())) {
+    if (!(await driver.isAdmin()) && !process.env.VDD_NO_ELEVATE) {
       app.releaseSingleInstanceLock()
       if (await relaunchElevated()) {
         if (app.isPackaged) {

@@ -48,7 +48,7 @@ export const useSettings = create<SettingsState>((set, get) => ({
           loadError: null
         })
       } else {
-        set({ loaded: true, loadError: result.error ?? 'Failed to load settings' })
+        set({ loaded: true, loadError: result.error ?? '加载设置失败' })
       }
     } catch (error) {
       set({ loaded: true, loadError: error instanceof Error ? error.message : String(error) })
@@ -71,13 +71,13 @@ export const useSettings = create<SettingsState>((set, get) => ({
         set({ saved: clone(draft), dirty: false, isDefault: false })
         useUi
           .getState()
-          .toast('success', 'Configuration saved', result.backupCreated ? `Backup: ${result.backupCreated}` : undefined)
+          .toast('success', '配置已保存', result.backupCreated ? `备份：${result.backupCreated}` : undefined)
         return true
       }
-      useUi.getState().toast('error', 'Save failed', result.error)
+      useUi.getState().toast('error', '保存失败', result.error)
       return false
     } catch (error) {
-      useUi.getState().toast('error', 'Save failed', error instanceof Error ? error.message : String(error))
+      useUi.getState().toast('error', '保存失败', error instanceof Error ? error.message : String(error))
       return false
     }
   }

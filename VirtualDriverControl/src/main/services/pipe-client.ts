@@ -148,14 +148,14 @@ export class PipeClient extends EventEmitter {
       return this.finish(command, started, options, {
         ok: false,
         response: '',
-        error: 'RELOAD_DRIVER is blocked: it causes undefined behavior in the driver. Use SETDISPLAYCOUNT instead.'
+        error: 'RELOAD_DRIVER 已被阻止：它会导致驱动出现未定义行为。请改用 SETDISPLAYCOUNT。'
       })
     }
     if (command.length > 127) {
       return this.finish(command, started, options, {
         ok: false,
         response: '',
-        error: 'Command exceeds the 127 character pipe buffer limit.'
+        error: '命令超过 127 字符的管道缓冲区限制。'
       })
     }
 
@@ -287,9 +287,9 @@ export class PipeClient extends EventEmitter {
       return Buffer.from(stdout.trim(), 'base64')
     } catch (error) {
       const code = (error as { code?: number }).code
-      if (code === 2) throw new Error('Driver pipe not available (driver not running)')
-      if (code === 3) throw new Error('Timed out connecting to driver pipe')
-      if (code === 4) throw new Error(`Pipe command timed out after ${Math.round(timeoutMs / 1000)}s`)
+      if (code === 2) throw new Error('驱动管道不可用（驱动未运行）')
+      if (code === 3) throw new Error('连接驱动管道超时')
+      if (code === 4) throw new Error(`管道命令在 ${Math.round(timeoutMs / 1000)} 秒后超时`)
       throw error instanceof Error ? error : new Error(String(error))
     }
   }

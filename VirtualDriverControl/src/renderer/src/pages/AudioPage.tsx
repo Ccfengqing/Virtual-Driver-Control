@@ -31,8 +31,8 @@ export function AudioPage(): React.JSX.Element {
     <div className="page-inner">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Audio</h1>
-          <p className="page-subtitle">Virtual audio devices, Windows endpoint control and live routing</p>
+          <h1 className="page-title">音频</h1>
+          <p className="page-subtitle">虚拟音频设备、Windows 终结点控制与实时路由</p>
         </div>
       </div>
 
@@ -59,22 +59,22 @@ function EndpointsCard(): React.JSX.Element {
   return (
     <Card
       icon={MonitorSpeaker}
-      title="Windows audio devices"
-      subtitle="Active playback and recording endpoints - volume, mute and default device"
+      title="Windows 音频设备"
+      subtitle="活动的播放与录制终结点 - 音量、静音与默认设备"
       actions={
         <button type="button" className="btn ghost small" disabled={loading} onClick={() => void refresh()}>
-          {loading ? <Loader2 size={13} className="spin" /> : <RefreshCw size={13} />} Refresh
+          {loading ? <Loader2 size={13} className="spin" /> : <RefreshCw size={13} />} 刷新
         </button>
       }
     >
       {error && <div className="banner warn" style={{ marginBottom: 10 }}>{error}</div>}
       {endpoints.length === 0 && !error && (
-        <div className="faint">{loading ? 'Enumerating audio endpoints…' : 'No active audio endpoints found.'}</div>
+        <div className="faint">{loading ? '正在枚举音频终结点…' : '未找到活动的音频终结点。'}</div>
       )}
       <div className="card-grid two">
         <div>
           <div className="nav-section" style={{ margin: '0 0 8px' }}>
-            Output · {outputs.length}
+            输出 · {outputs.length}
           </div>
           <div className="endpoint-list">
             {outputs.map((e) => (
@@ -84,7 +84,7 @@ function EndpointsCard(): React.JSX.Element {
         </div>
         <div>
           <div className="nav-section" style={{ margin: '0 0 8px' }}>
-            Input · {inputs.length}
+            输入 · {inputs.length}
           </div>
           <div className="endpoint-list">
             {inputs.map((e) => (
@@ -109,15 +109,15 @@ function EndpointRow(props: { endpoint: AudioEndpoint }): React.JSX.Element {
       <div className="ep-main">
         <div className="ep-name" title={endpoint.name}>
           {endpoint.name}
-          {endpoint.isVirtual && <span className="ep-badge accent">virtual</span>}
-          {endpoint.isDefault && <span className="ep-badge">default</span>}
-          {endpoint.isDefaultComm && <span className="ep-badge dim">comms</span>}
+          {endpoint.isVirtual && <span className="ep-badge accent">虚拟</span>}
+          {endpoint.isDefault && <span className="ep-badge">默认</span>}
+          {endpoint.isDefaultComm && <span className="ep-badge dim">通讯</span>}
         </div>
         <div className="ep-controls">
           <button
             type="button"
             className={`btn ghost small icon-only ${endpoint.muted ? 'danger' : ''}`}
-            aria-label={endpoint.muted ? 'Unmute' : 'Mute'}
+            aria-label={endpoint.muted ? '取消静音' : '静音'}
             onClick={() => void setMute(endpoint.id, !endpoint.muted)}
           >
             {endpoint.muted ? <VolumeX size={13} /> : <Volume2 size={13} />}
@@ -132,7 +132,7 @@ function EndpointRow(props: { endpoint: AudioEndpoint }): React.JSX.Element {
           <span className="ep-vol mono">{Math.round(endpoint.volume * 100)}%</span>
           {!endpoint.isDefault && (
             <button type="button" className="btn ghost small" onClick={() => void setDefault(endpoint.id)}>
-              <Check size={12} /> Default
+              <Check size={12} /> 设为默认
             </button>
           )}
         </div>
@@ -160,7 +160,7 @@ function RoutingCard(): React.JSX.Element {
   const [sourceId, setSourceId] = useState('')
   const [sinkId, setSinkId] = useState('')
 
-  const sourceOptions = [{ deviceId: SYSTEM_AUDIO_SOURCE, label: 'System audio (default output loopback)' }, ...webInputs]
+  const sourceOptions = [{ deviceId: SYSTEM_AUDIO_SOURCE, label: '系统音频（默认输出回环）' }, ...webInputs]
 
   const add = (): void => {
     const source = sourceOptions.find((d) => d.deviceId === sourceId)
@@ -172,17 +172,17 @@ function RoutingCard(): React.JSX.Element {
   return (
     <Card
       icon={Waves}
-      title="Audio routing"
-      subtitle="Pump any input or the system mix into any output - routes run while the app is open"
+      title="音频路由"
+      subtitle="将任意输入或系统混音送到任意输出 - 路由在应用打开期间生效"
       actions={
         <button type="button" className="btn ghost small" onClick={() => void refreshWebDevices()}>
-          <RefreshCw size={13} /> Rescan devices
+          <RefreshCw size={13} /> 重新扫描设备
         </button>
       }
     >
       <div className="route-add">
         <select value={sourceId} onChange={(e) => setSourceId(e.target.value)}>
-          <option value="">Select source…</option>
+          <option value="">选择来源…</option>
           {sourceOptions.map((d) => (
             <option key={d.deviceId} value={d.deviceId}>
               {d.label}
@@ -191,7 +191,7 @@ function RoutingCard(): React.JSX.Element {
         </select>
         <ArrowRight size={15} style={{ color: 'var(--text-faint)', flexShrink: 0 }} />
         <select value={sinkId} onChange={(e) => setSinkId(e.target.value)}>
-          <option value="">Select output…</option>
+          <option value="">选择输出…</option>
           {webOutputs.map((d) => (
             <option key={d.deviceId} value={d.deviceId}>
               {d.label}
@@ -199,7 +199,7 @@ function RoutingCard(): React.JSX.Element {
           ))}
         </select>
         <button type="button" className="btn primary small" disabled={!sourceId || !sinkId} onClick={add}>
-          <Plus size={13} /> Add route
+          <Plus size={13} /> 添加路由
         </button>
       </div>
 
@@ -221,7 +221,7 @@ function RoutingCard(): React.JSX.Element {
               </div>
               <div className="route-controls">
                 <span className="faint" style={{ fontSize: 11 }}>
-                  Gain
+                  增益
                 </span>
                 <input
                   type="range"
@@ -238,22 +238,22 @@ function RoutingCard(): React.JSX.Element {
             <button
               type="button"
               className="btn ghost small icon-only"
-              aria-label="Remove route"
+              aria-label="移除路由"
               onClick={() => void removeRoute(route.id)}
             >
               <Trash2 size={14} />
             </button>
           </div>
         ))}
-        {routes.length === 0 && <div className="faint">No routes yet - add one above.</div>}
+        {routes.length === 0 && <div className="faint">暂无路由 - 请在上方添加。</div>}
       </div>
 
       <div className="banner info" style={{ marginTop: 12 }}>
         <Info size={15} />
         <span>
-          <strong>Mic → speaker:</strong> pick a microphone and an output. <strong>Speaker → speaker:</strong> use{' '}
-          <em>System audio</em> as the source. <strong>Speaker → mic:</strong> route into{' '}
-          <em>Speakers (Virtual Audio Driver)</em> - apps then hear it on the matching virtual microphone.
+          <strong>麦克风 → 扬声器：</strong>选择麦克风和输出设备。<strong>扬声器 → 扬声器：</strong>使用{' '}
+          <em>系统音频</em>作为来源。<strong>扬声器 → 麦克风：</strong>路由到{' '}
+          <em>Speakers (Virtual Audio Driver)</em> - 应用随后会在对应的虚拟麦克风上听到声音。
         </span>
       </div>
     </Card>

@@ -19,8 +19,8 @@ import { useDriver } from '@renderer/stores/driver'
 import { useInstaller } from '@renderer/stores/installer'
 
 const TITLES: Record<ManagedDriverId, string> = {
-  display: 'Display driver lifecycle',
-  audio: 'Audio driver lifecycle'
+  display: '显示器驱动生命周期',
+  audio: '音频驱动生命周期'
 }
 
 const REPOS: Record<ManagedDriverId, string> = {
@@ -74,54 +74,54 @@ export function DriverLifecycle(props: { driver: ManagedDriverId }): React.JSX.E
 
   const installLabel = !installed
     ? latest
-      ? `Download & install ${latest.tag}`
-      : 'Download & install latest'
+      ? `下载并安装 ${latest.tag}`
+      : '下载并安装最新版本'
     : updateAvailable
-      ? `Update to ${latest?.tag}`
-      : 'Reinstall latest'
+      ? `更新到 ${latest?.tag}`
+      : '重新安装最新版本'
 
   const installedDetail = (): string => {
-    if (!installed) return 'No device on this system'
+    if (!installed) return '此系统上没有设备'
     const statuses = device?.statuses.join(', ') ?? ''
     if (driver === 'display') {
-      return displayStatus?.dllDate ? `MttVDD.dll · ${displayStatus.dllDate}` : `device status ${statuses}`
+      return displayStatus?.dllDate ? `MttVDD.dll · ${displayStatus.dllDate}` : `设备状态 ${statuses}`
     }
-    return `${deviceCount} device${deviceCount === 1 ? '' : 's'} · status ${statuses}`
+    return `${deviceCount} 个设备 · 状态 ${statuses}`
   }
 
   return (
     <Card
       icon={PackageOpen}
       title={TITLES[driver]}
-      subtitle={`Official packages from ${REPOS[driver]} - downloads are checksum-verified`}
+      subtitle={`来自 ${REPOS[driver]} 的官方安装包 - 下载经过校验和验证`}
       actions={
         <button type="button" className="btn ghost small" disabled={checking || busy} onClick={() => void checkLatest(driver)}>
-          {checking ? <Loader2 size={13} className="spin" /> : <RefreshCw size={13} />} Check for updates
+          {checking ? <Loader2 size={13} className="spin" /> : <RefreshCw size={13} />} 检查更新
         </button>
       }
     >
       <div className="lifecycle-grid">
         <div className="lifecycle-block">
           <span className="stat-label">
-            <PackageCheck size={11} /> Installed
+            <PackageCheck size={11} /> 已安装
           </span>
           <span className="stat-value" style={{ color: installed ? 'var(--success)' : 'var(--danger)' }}>
-            {installed ? installedTag ?? 'Installed' : 'Not installed'}
+            {installed ? installedTag ?? '已安装' : '未安装'}
           </span>
           <span className="stat-sub">{installedDetail()}</span>
         </div>
 
         <div className="lifecycle-block">
           <span className="stat-label">
-            <Download size={11} /> Latest release
+            <Download size={11} /> 最新版本
           </span>
-          <span className="stat-value">{checking ? 'Checking…' : latest?.tag ?? '—'}</span>
+          <span className="stat-value">{checking ? '检查中…' : latest?.tag ?? '—'}</span>
           <span className="stat-sub">
             {checkError
-              ? `Check failed: ${checkError}`
+              ? `检查失败：${checkError}`
               : latest
-                ? `${formatDate(latest.publishedAt)}${latest.asset ? ` · ${latest.asset.name} (${formatSize(latest.asset.sizeBytes)})` : ' · no driver package'}`
-                : 'Fetching from GitHub…'}
+                ? `${formatDate(latest.publishedAt)}${latest.asset ? ` · ${latest.asset.name} (${formatSize(latest.asset.sizeBytes)})` : ' · 无驱动安装包'}`
+                : '正在从 GitHub 获取…'}
           </span>
           {latest && (
             <button
@@ -130,7 +130,7 @@ export function DriverLifecycle(props: { driver: ManagedDriverId }): React.JSX.E
               style={{ padding: '1px 6px', marginLeft: -6, alignSelf: 'flex-start' }}
               onClick={() => void window.vdd.system.openExternal(latest.htmlUrl)}
             >
-              Release notes <ExternalLink size={11} />
+              版本说明 <ExternalLink size={11} />
             </button>
           )}
         </div>
@@ -140,12 +140,12 @@ export function DriverLifecycle(props: { driver: ManagedDriverId }): React.JSX.E
         <div className={`banner ${testSigning === true ? 'info' : 'warn'}`} style={{ marginTop: 12 }}>
           {testSigning === true ? <ShieldCheck size={16} style={{ flexShrink: 0 }} /> : <ShieldAlert size={16} style={{ flexShrink: 0 }} />}
           <span style={{ flex: 1 }}>
-            The Virtual Audio Driver is currently <strong>test-signed</strong>, so Windows must run in{' '}
-            <strong>Test Signing mode</strong> for the device to start.{' '}
-            {testSigning === true && 'Test signing is enabled in this PC\u2019s boot configuration.'}
-            {testSigning === false && 'Test signing is currently OFF on this PC.'}
-            {testSigning === null && 'The current test signing state could not be determined.'}
-            {testSigning !== null && ' Changes take effect after a Windows restart. Secure Boot must be disabled to enable it.'}
+            虚拟音频驱动当前为<strong>测试签名</strong>，因此 Windows 必须处于{' '}
+            <strong>测试签名模式</strong>，设备才能启动。{' '}
+            {testSigning === true && '此电脑的启动配置中已启用测试签名。'}
+            {testSigning === false && '此电脑当前未启用测试签名。'}
+            {testSigning === null && '无法确定当前的测试签名状态。'}
+            {testSigning !== null && ' 更改将在 Windows 重启后生效。启用它需要先关闭安全启动。'}
           </span>
           {testSigning !== null && (
             <button
@@ -163,10 +163,10 @@ export function DriverLifecycle(props: { driver: ManagedDriverId }): React.JSX.E
                 <ShieldCheck size={13} />
               )}
               {busyHere && working?.op === 'testsigning'
-                ? 'Applying…'
+                ? '应用中…'
                 : testSigning
-                  ? 'Disable test signing'
-                  : 'Enable test signing'}
+                  ? '禁用测试签名'
+                  : '启用测试签名'}
             </button>
           )}
         </div>
@@ -198,23 +198,23 @@ export function DriverLifecycle(props: { driver: ManagedDriverId }): React.JSX.E
           ) : (
             <Download size={13} />
           )}
-          {busyHere && working?.op === 'install' ? 'Installing…' : installLabel}
+          {busyHere && working?.op === 'install' ? '安装中…' : installLabel}
         </button>
         {installed && (
           <>
             <button type="button" className="btn ghost small" disabled={busy} onClick={() => void restartDevice(driver)}>
               {busyHere && working?.op === 'restart' ? <Loader2 size={13} className="spin" /> : <Power size={13} />}
-              {busyHere && working?.op === 'restart' ? 'Restarting…' : 'Restart device'}
+              {busyHere && working?.op === 'restart' ? '重启中…' : '重启设备'}
             </button>
             <button type="button" className="btn ghost small danger" disabled={busy} onClick={() => void uninstallDriver(driver)}>
               {busyHere && working?.op === 'uninstall' ? <Loader2 size={13} className="spin" /> : <Trash2 size={13} />}
-              {busyHere && working?.op === 'uninstall' ? 'Removing…' : 'Uninstall'}
+              {busyHere && working?.op === 'uninstall' ? '卸载中…' : '卸载'}
             </button>
           </>
         )}
         {updateAvailable && (
           <span className="lifecycle-hint">
-            Update available: {installedTag} → {latest?.tag}
+            有可用更新：{installedTag} → {latest?.tag}
           </span>
         )}
       </div>
@@ -222,7 +222,7 @@ export function DriverLifecycle(props: { driver: ManagedDriverId }): React.JSX.E
       {multiInstance && (
         <div className="lifecycle-actions" style={{ marginTop: 10 }}>
           <span className="stat-label" style={{ marginRight: 2 }}>
-            <Layers size={11} /> Devices
+            <Layers size={11} /> 设备数
           </span>
           <Segmented
             value={String(selectedInstances)}
@@ -237,11 +237,11 @@ export function DriverLifecycle(props: { driver: ManagedDriverId }): React.JSX.E
               onClick={() => void setInstances(driver, selectedInstances)}
             >
               {busyHere && working?.op === 'instances' ? <Loader2 size={13} className="spin" /> : <Layers size={13} />}
-              {busyHere && working?.op === 'instances' ? 'Applying…' : `Set ${selectedInstances} device${selectedInstances === 1 ? '' : 's'}`}
+              {busyHere && working?.op === 'instances' ? '应用中…' : `设为 ${selectedInstances} 个设备`}
             </button>
           )}
           <span className="faint" style={{ fontSize: 11.5 }}>
-            Each device adds an independent virtual speaker + microphone pair for routing.
+            每个设备会增加一组独立的虚拟扬声器 + 麦克风用于路由。
           </span>
         </div>
       )}
