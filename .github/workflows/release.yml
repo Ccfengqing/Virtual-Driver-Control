@@ -39,12 +39,12 @@ jobs:
         working-directory: VirtualDriverControl
         run: npm run build-portable
 
-      - name: 重命名 exe 为中文名
+      - name: 重命名 exe 为英文名
         working-directory: VirtualDriverControl/dist
         shell: pwsh
         run: |
           $exe = Get-ChildItem -Filter '*.exe' | Select-Object -First 1
-          if ($exe) { Rename-Item $exe.FullName '虚拟显示器控制中心.exe' }
+          if ($exe) { Rename-Item $exe.FullName 'Virtual-Driver-Control-zh.exe' }
 
       - name: 发布 Release
         uses: softprops/action-gh-release@v2
@@ -58,8 +58,8 @@ jobs:
             基于 VirtualDrivers/Virtual-Driver-Control 汉化，仅个人使用。
 
             - 全部界面、进度提示、错误信息已中文化
-            - 便携版 exe，无需安装，右键以管理员身份运行
-            - 下载后如被 Defender 拦截，请选择"仍要运行"
+            - 便携版 exe，双击即弹出 UAC 提权，点"是"即可运行
+            - 文件名 Virtual-Driver-Control-zh.exe，下载后如被 Defender 拦截请选择"仍要运行"
 
             **注意**：首次启动会请求管理员权限；如需免提权启动可设置环境变量 `VDD_NO_ELEVATE=1`。
           draft: false
